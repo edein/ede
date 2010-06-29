@@ -17,7 +17,7 @@ public class edeMain extends Activity {
     public static float yStart;
     public static float yEnd;
     
-    float test;
+    float testv2;
     
     static TextView coord;
 	

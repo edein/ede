@@ -20,6 +20,7 @@ public class edeView extends View{
 	
 	Paint mPaint;
 	
+	float testv2;
 	
 	public edeView(Context context, AttributeSet attrs) {
 		super(context, attrs);
