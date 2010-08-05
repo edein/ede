@@ -1,9 +1,8 @@
 package ede.iupac;
 
 import android.content.Context;
-import android.view.View;
 
-public class LineObj extends View {
+public class LineObj {
 	
 	public static int x0;
 	public static int x1;
@@ -14,16 +13,17 @@ public class LineObj extends View {
 	public static float testValue;
 	
 	public LineObj(Context context) {
-		super(context);
+		
 		// TODO Auto-generated constructor stub
 	}
 
 	
 	
-	 public static float checkProxim(float testX, float testY)
+	 public static float checkProxim(float x0, float y0, float x1, float y1, float xCur, float yCur)
 	    {
-	        int dy = y1 - y0;
-	        int dx = x1 - x0;
+		 	
+	        int dy = (int) (y1 - y0);
+	        int dx = (int) (x1 - x0);
 	        int stepx, stepy;
 	        
 
@@ -38,12 +38,11 @@ public class LineObj extends View {
 	                if (fraction >= 0) {
 	                    y0 += stepy;
 	                    fraction -= dx;                                // same as fraction -= 2*dx
-	                    	if (fraction == testX)
-	                    		testValue= testX;
+	                    	
 	                }
 	                x0 += stepx;
 	                fraction += dy;                                    // same as fraction -= 2*dy
-	                
+	                edeMain.mathOutput(x0, y0);
 	            }
 	        } else {
 	            int fraction = dx - (dy >> 1);
@@ -53,11 +52,11 @@ public class LineObj extends View {
 	                    fraction -= dy;
 	                }
 	                y0 += stepy;
-	                fraction += dx;;
+	                fraction += dx;
+	                edeMain.mathOutput(x0, y0);;
 	            }
 	        }
 	        return testValue;
 	    }
-
 	
 }

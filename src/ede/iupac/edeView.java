@@ -20,8 +20,6 @@ public class edeView extends View{
 	
 	Paint mPaint;
 	
-	float testv2;
-	
 	public edeView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub		
@@ -47,10 +45,9 @@ public class edeView extends View{
 		
 		xCur = event.getX();
 		yCur = event.getY();
-		
-		
+
 		edeMain.updateCoord(xStartv, xEndv, yStartv, yEndv);
-	
+		LineObj.checkProxim(xStartv, yStartv, xEndv, yEndv, xCur, yCur);
 		invalidate();
 		return true;
 		}

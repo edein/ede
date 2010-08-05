@@ -15,12 +15,10 @@ public class edeMain extends Activity {
     public static float xStart;
     public static float xEnd;
     public static float yStart;
-    public static float yEnd;
-    
-    float testv2;
+    public static float yEnd;;
     
     static TextView coord;
-	
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +32,19 @@ public class edeMain extends Activity {
     }
     public static  void updateCoord(float xS, float xE, float yS, float yE ){
     	xStart = xS; xEnd= xE; yStart= yS; yEnd = yE;
-    	coord.setText("xS: " + xStart + " - xE: "  + xEnd + "             yS: " + yStart + " - yE: " + yEnd );
+    	coord.setText("xS: " + xStart + " - xE: "  + xEnd + "             yS: " + yStart + " - yE: " + yEnd ); 	
     	
+    }
+    
+    public static void updateProx( float xCur, float yCur){
+    	
+    	coord.append( '\n' + " xCur: " + xCur + " - yCur: "+ yCur + "    Near: ");
+    	
+    }
+    
+    public static void mathOutput(float x, float y)
+    {
+    	coord.append( '\n' + "mathOutput: " + x + " " + y);    	
     }
     
 }
