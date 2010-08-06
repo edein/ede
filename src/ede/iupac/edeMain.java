@@ -15,10 +15,12 @@ public class edeMain extends Activity {
     public static float xStart;
     public static float xEnd;
     public static float yStart;
-    public static float yEnd;;
+    public static float yEnd;
     
     static TextView coord;
-
+    
+    static LineInfo mLineInfo;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +36,9 @@ public class edeMain extends Activity {
     	xStart = xS; xEnd= xE; yStart= yS; yEnd = yE;
     	coord.setText("xS: " + xStart + " - xE: "  + xEnd + "             yS: " + yStart + " - yE: " + yEnd ); 	
     	
+    	mLineInfo = new LineInfo();
+    	coord.append('\n'+ "LineInfo:" + mLineInfo.getx0());
+    	
     }
     
     public static void updateProx( float xCur, float yCur){
@@ -44,7 +49,48 @@ public class edeMain extends Activity {
     
     public static void mathOutput(float x, float y)
     {
-    	coord.append( '\n' + "mathOutput: " + x + " " + y);    	
+    	//coord.append( '\n' + "mathOutput: " + x + " " + y);    	
+    }
+    
+    
+    public static void checkProxim(float x0, float y0, float x1, float y1, float xCur, float yCur)
+    {
+	 	
+        int dy = (int) (y1 - y0);
+        int dx = (int) (x1 - x0);
+        int stepx, stepy;
+        
+
+        if (dy < 0) { dy = -dy;  stepy = -1; } else { stepy = 1; }
+        if (dx < 0) { dx = -dx;  stepx = -1; } else { stepx = 1; }
+        dy <<= 1;                                                  // dy is now 2*dy
+        dx <<= 1;                                                  // dx is now 2*dx
+
+        if (dx > dy) {
+            int fraction = dy - (dx >> 1);                         // same as 2*dy - dx
+            while (x0 != x1) {
+                if (fraction >= 0) {
+                    y0 += stepy;
+                    fraction -= dx;                                // same as fraction -= 2*dx
+                    	
+                }
+                x0 += stepx;
+                fraction += dy;                                    // same as fraction -= 2*dy
+                edeMain.mathOutput(x0, y0);
+            }
+        } else {
+            int fraction = dx - (dy >> 1);
+            while (y0 != y1) {
+                if (fraction >= 0) {
+                    x0 += stepx;
+                    fraction -= dy;
+                }
+                y0 += stepy;
+                fraction += dx;
+                edeMain.mathOutput(x0, y0);;
+            }
+        }
+     
     }
     
 }

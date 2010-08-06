@@ -20,11 +20,13 @@ public class edeView extends View{
 	
 	Paint mPaint;
 	
+	
 	public edeView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub		
-		mPaint= new Paint();
+		mPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
 		mPaint.setColor(Color.WHITE);
+		mPaint.setStrokeWidth(3);
 	}
 	
 	@Override
@@ -38,16 +40,20 @@ public class edeView extends View{
 			 xStartv = event.getX(); 
 			 yStartv = event.getY();
 			 
+			 
 		case(MotionEvent.ACTION_UP):
 			 xEndv= event.getX();
 			 yEndv = event.getY();
 		}
 		
+		edeMain.mLineInfo(xStartv, yStartv, xEndv,yEndv);
+		
 		xCur = event.getX();
 		yCur = event.getY();
 
+		
 		edeMain.updateCoord(xStartv, xEndv, yStartv, yEndv);
-		LineObj.checkProxim(xStartv, yStartv, xEndv, yEndv, xCur, yCur);
+		edeMain.checkProxim(xStartv, yStartv, xEndv, yEndv, xCur, yCur);
 		invalidate();
 		return true;
 		}
@@ -55,6 +61,8 @@ public class edeView extends View{
 	@Override
 	public void onDraw(Canvas canvas){
 		canvas.drawLine(xStartv, yStartv, xCur, yCur, mPaint);
+		//if(mLineInfo.getx0() > 0)
+			//canvas.drawLine(mLineInfo.getx0(), mLineInfo.gety0(), mLineInfo.getx1(), mLineInfo.gety1(), mPaint);
 	}
 
 }
