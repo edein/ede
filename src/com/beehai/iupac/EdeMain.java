@@ -12,12 +12,7 @@ import android.graphics.Paint;
 public class EdeMain extends Activity {
     /** Called when the activity is first created. */
 
-    public static float xStart;
-    public static float xEnd;
-    public static float yStart;
-    public static float yEnd;
-    
-    static TextView coord;
+   static TextView coord;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,9 +25,8 @@ public class EdeMain extends Activity {
 		coord.setBackgroundColor(Color.CYAN);
 	    
     }
-    public static  void updateCoord(float xS, float xE, float yS, float yE ){
-    	xStart = xS; xEnd= xE; yStart= yS; yEnd = yE;
-    	coord.setText("xS: " + xStart + " - xE: "  + xEnd + "             yS: " + yStart + " - yE: " + yEnd ); 	
+    public static  void updateCoord(float x0, float y0, float x1, float y1 ){
+    	coord.setText("xS: " + x0 + " - y0: "  + y0 + "             x1: " + x1 + " - y1: " + y1 ); 	
     	
     
     }
@@ -45,7 +39,7 @@ public class EdeMain extends Activity {
     
     public static void mathOutput(float x, float y)
     {
-    	coord.append( '\n' + "mathOutput: " + x + " " + y);    	
+    	//coord.append( '\n' + "mathOutput: " + x + " " + y);    	
     }
     
     

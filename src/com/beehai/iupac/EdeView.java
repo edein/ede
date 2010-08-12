@@ -1,5 +1,7 @@
 package com.beehai.iupac;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,15 +12,12 @@ import android.view.View;
 
 public class EdeView extends View{
 	
-	private float xStartv;
-	private float xEndv;
-	private float yStartv;
-	private float yEndv ;
-	private float xCur;
-	private float yCur;
-	
 	Paint mPaint;
 	
+	private int lineCount;
+	private int lineID;
+	
+	ArrayList<LineInfo> lineArray = new ArrayList<LineInfo>();
 	
 	public EdeView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -31,8 +30,7 @@ public class EdeView extends View{
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
 			
-		int mEvent = event.getAction();
-		
+		int mEvent = event.getAction();	
 		
 		switch(mEvent){
 		case(MotionEvent.ACTION_DOWN):
@@ -50,8 +48,11 @@ public class EdeView extends View{
 		yCur = event.getY();
 
 		
-		EdeMain.updateCoord(xStartv, xEndv, yStartv, yEndv);
+		EdeMain.updateCoord(xStartv, yStartv, xEndv, yEndv);
 		EdeMain.checkProxim(xStartv, yStartv, xEndv, yEndv, xCur, yCur);
+		
+		EdeMain.storeLine(xStartv, yStartv, xEndv, yEndv);
+		
 		invalidate();
 		return true;
 		}
