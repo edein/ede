@@ -4,10 +4,12 @@ import android.content.Context;
 
 public class LineInfo{
 	
-	private float x0 = 1;
+	private float x0;
 	private float y0;
 	private float x1;
 	private float y1;
+	
+	private int lineID;
 	
 	public LineInfo(){
 		
@@ -18,8 +20,9 @@ public class LineInfo{
 		// TODO Auto-generated constructor stub
 	}
 
-	public LineInfo(float x0, float y0, float x1, float y1)
+	public void setLineInfo(int ID, float x0, float y0, float x1, float y1)
 	{
+		this.lineID = ID;
 		this.x0=x0;
 		this.y0=y0;
 		this.x1=x1;
@@ -41,5 +44,9 @@ public class LineInfo{
 	public float gety1()
 	{
 		return this.y1;
+	}
+	public int getID()
+	{
+		return this.lineID;
 	}
 }

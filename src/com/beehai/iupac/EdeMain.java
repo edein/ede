@@ -1,9 +1,13 @@
 package com.beehai.iupac;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,6 +17,7 @@ public class EdeMain extends Activity {
     /** Called when the activity is first created. */
 
    static TextView coord;
+   static Button undoBtn;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,12 +28,27 @@ public class EdeMain extends Activity {
         coord = (TextView) findViewById(R.id.coord);
 		coord.setTextColor(Color.MAGENTA);
 		coord.setBackgroundColor(Color.CYAN);
+		
+		undoBtn = (Button) findViewById(R.id.undoBtn);
+		
+		undoBtn.setTextColor(Color.BLACK);
+		undoBtn.setOnClickListener(new View.OnClickListener() {
+             public void onClick(View v) {
+            	 EdeView.undo();
+             }
+		 });
 	    
     }
     public static  void updateCoord(float x0, float y0, float x1, float y1 ){
     	coord.setText("xS: " + x0 + " - y0: "  + y0 + "             x1: " + x1 + " - y1: " + y1 ); 	
     	
+    }
     
+    public static void errorDump(Exception e){
+    	StringWriter sw = new StringWriter();
+    	e.printStackTrace(new PrintWriter(sw));
+    	
+    	coord.setText(sw.toString()); 
     }
     
     public static void updateProx( float xCur, float yCur){

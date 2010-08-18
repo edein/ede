@@ -11,7 +11,15 @@
 		/>
 		<com.beehai.iupac.EdeView
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="350px"
 		/>
+	   <Button
+        android:id="@+id/undoBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dip"
+        android:text="Undo" />
+
 		
 </LinearLayout>

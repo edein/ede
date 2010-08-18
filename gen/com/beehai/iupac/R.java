@@ -15,6 +15,7 @@ public final class R {
     }
     public static final class id {
         public static final int coord=0x7f050000;
+        public static final int undoBtn=0x7f050001;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -22,6 +23,6 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f040001;
         public static final int hello=0x7f040000;
-        public static final int hello2=0x7f040002;
+        public static final int undo=0x7f040002;
     }
 }
