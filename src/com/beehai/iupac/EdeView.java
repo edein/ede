@@ -7,8 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 
 public class EdeView extends View{
 	
@@ -23,8 +25,8 @@ public class EdeView extends View{
 	float my1 = 0;
 	float xCur;
 	float yCur;
-
 	
+
 	public EdeView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub		
@@ -32,6 +34,7 @@ public class EdeView extends View{
 		mPaint.setColor(Color.WHITE);
 		mPaint.setStrokeWidth(3);
 	}
+	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
@@ -44,11 +47,12 @@ public class EdeView extends View{
 		    }
 		    else if (event.getAction() == MotionEvent.ACTION_MOVE) {
 		        // manage move
+		    	
 		    }
 		    else if (event.getAction() == MotionEvent.ACTION_UP){
 		    	mx1 = event.getX();
 		    	my1 = event.getY();
-		    	  fillArray(lineID, mx0, my0, mx1, my1);
+		    	fillArray(lineID, mx0, my0, mx1, my1);
 		    }
 		    else {
 		        // manage any other MotionEvent
@@ -82,16 +86,20 @@ public class EdeView extends View{
 		{
 		try
 			{ 
-				canvas.drawLine(mx0, my0, xCur, yCur, mPaint);
+				int arraySize = lineArray.size();
+				if(xCur>0)
+				{
+					EdeMain.checkProxim(mx0, my0, mx1, my1);
+					canvas.drawLine(mx0, my0, xCur, yCur, mPaint);
 				
-			
-				int test = lineArray.size();
-				for (int i = 0; i <test; i++)
+				}
+				
+				for (int i = 0; i <arraySize; i++)
 				{
 				LineInfo mtest = (LineInfo) lineArray.get(i);
 				canvas.drawLine(mtest.getx0(), mtest.gety0(), mtest.getx1(),mtest.gety1(), mPaint);
 				
-				EdeMain.updateCoord(lineID, test, mtest.getx1(), mtest.gety1());
+				EdeMain.updateCoord(lineID, arraySize, mtest.getx1(), mtest.gety1());
 				}
 				
 			}	
@@ -101,10 +109,41 @@ public class EdeView extends View{
 				}
 			
 		}
-	public static void undo()
+//place undoBtn here because non-static call	
+	public void undo()
 	{
-		if (lineArray.size() > 0)
-		lineArray.remove(lineArray.size() - 1);
+		int arraySize = lineArray.size();
+		if(arraySize > 1)
+			{
+			lineArray.remove(arraySize - 1);
+			xCur= 0;
+			lineID--;
+			invalidate();
+			}
+		else if(arraySize == 1)
+		{
+			lineArray.remove(0);
+			xCur=0;
+			Log.v(EdeMain.LOG_TAG, "my xCur"+ xCur);
+			lineID--;
+			invalidate();
+		}
+//		
+//		invalidate();
+//		lineArray.remove(0);
+//		LineInfo test = lineArray.get(0);
+//		Log.v(EdeMain.LOG_TAG, "my array size: "+ test.getx0()+"-" + test.gety0() + "-"+ test.getx1()+ "-" +test.gety1() );
+//		invalidate();
 	}
 	
 }
+
+
+
+
+
+
+
+
+
+

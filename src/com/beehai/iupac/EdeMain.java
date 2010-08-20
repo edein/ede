@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -14,11 +15,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 public class EdeMain extends Activity {
-    /** Called when the activity is first created. */
-
+   /** Called when the activity is first created. */
+   public static final String LOG_TAG = "iupac";
    static TextView coord;
-   static Button undoBtn;
-    
+   public static Button undoBtn;
+ 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,18 +30,21 @@ public class EdeMain extends Activity {
 		coord.setTextColor(Color.MAGENTA);
 		coord.setBackgroundColor(Color.CYAN);
 		
-		undoBtn = (Button) findViewById(R.id.undoBtn);
-		
-		undoBtn.setTextColor(Color.BLACK);
-		undoBtn.setOnClickListener(new View.OnClickListener() {
-             public void onClick(View v) {
-            	 EdeView.undo();
-             }
+		EdeMain.undoBtn = (Button) findViewById(R.id.undoBtn);
+		EdeMain.undoBtn.setTextColor(Color.BLACK);
+		EdeMain.undoBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	EdeView edeView;
+            	edeView = (EdeView) findViewById(R.id.EdeView);
+            	edeView.undo();
+            }
 		 });
+		
 	    
     }
+    
     public static  void updateCoord(float x0, float y0, float x1, float y1 ){
-    	coord.setText("xS: " + x0 + " - y0: "  + y0 + "             x1: " + x1 + " - y1: " + y1 ); 	
+    	//coord.setText("LineID: " + x0 + " - ArrSize: "  + y0 + "             x1: " + x1 + " - y1: " + y1 ); 	
     	
     }
     
@@ -53,17 +57,17 @@ public class EdeMain extends Activity {
     
     public static void updateProx( float xCur, float yCur){
     	
-    	coord.append( '\n' + " xCur: " + xCur + " - yCur: "+ yCur + "    Near: ");
+      coord.append( '\n' + " xCur: " + xCur + " - yCur: "+ yCur + "    Near: ");
     	
     }
     
     public static void mathOutput(float x, float y)
     {
-    	//coord.append( '\n' + "mathOutput: " + x + " " + y);    	
+    	coord.append( " -- "+ "mathOutput: " + x + " " + y);    	
     }
     
     
-    public static void checkProxim(float x0, float y0, float x1, float y1, float xCur, float yCur)
+    public static void checkProxim(float x0, float y0, float x1, float y1)
     {
 	 	
         int dy = (int) (y1 - y0);

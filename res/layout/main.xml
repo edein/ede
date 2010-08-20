@@ -10,6 +10,7 @@
 		    android:layout_height="wrap_content" 
 		/>
 		<com.beehai.iupac.EdeView
+			android:id="@+id/EdeView"
 			android:layout_width="fill_parent"
 			android:layout_height="350px"
 		/>
