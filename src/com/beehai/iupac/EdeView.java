@@ -26,6 +26,10 @@ public class EdeView extends View{
 	float xCur;
 	float yCur;
 	
+	float sx = 1;
+	float sy = 1;
+	float px;
+	float py;
 
 	public EdeView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -46,13 +50,16 @@ public class EdeView extends View{
 		        my0 = event.getY();
 		    }
 		    else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-		        // manage move
 		    	
 		    }
 		    else if (event.getAction() == MotionEvent.ACTION_UP){
 		    	mx1 = event.getX();
 		    	my1 = event.getY();
 		    	fillArray(lineID, mx0, my0, mx1, my1);
+		    	
+		    	
+		    	//EdeMain.checkProxim(mx0, my0, mx1, my1);
+				//Log.v(EdeMain.LOG_TAG, "utstuff: " + mx0 +" - " +my0+" - " + mx1+" - " + my1);
 		    }
 		    else {
 		        // manage any other MotionEvent
@@ -64,7 +71,9 @@ public class EdeView extends View{
 		
 		xCur = event.getX();
 		yCur = event.getY();
-
+		
+		
+		
 		
 		//EdeMain.updateCoord(xStartv, yStartv, xEndv, yEndv);
 		//EdeMain.checkProxim(xStartv, yStartv, xEndv, yEndv, xCur, yCur);
@@ -84,12 +93,48 @@ public class EdeView extends View{
 	@Override
 	public void onDraw(Canvas canvas)
 		{
+		
+		
+		if (sx==1.2f)
+		{
+			canvas.scale(sx, sy, px, py);
+			float realX;
+			float realY;
+			float realCurX;
+			float realCurY;
+			//realX = (inputX - scalecenterX) / scalingX + scalecenterx;
+			realX = (mx0 - px) / sx + px;
+			realY = (my0 - py) / sy + py;
+			realCurX = (xCur - px) / sx + px;
+			realCurY = (yCur - py) / sy + py;
+			mPaint.setColor(Color.RED);
+			if(xCur>0)
+			{
+				canvas.drawLine(realX, realY, realCurX, realCurY, mPaint);
+			}
+			int arraySize = lineArray.size();
+			
+			
+			for (int i = 0; i <arraySize; i++)
+			{
+			LineInfo mtest = (LineInfo) lineArray.get(i);
+			canvas.drawLine(mtest.getx0(), mtest.gety0(), mtest.getx1(),mtest.gety1(), mPaint);
+			
+			EdeMain.updateCoord(lineID, arraySize, mtest.getx1(), mtest.gety1());
+			
+			} 
+			
+		}
+		else{
+		
 		try
 			{ 
 				int arraySize = lineArray.size();
+				
 				if(xCur>0)
 				{
-					EdeMain.checkProxim(mx0, my0, mx1, my1);
+					
+					
 					canvas.drawLine(mx0, my0, xCur, yCur, mPaint);
 				
 				}
@@ -100,6 +145,7 @@ public class EdeView extends View{
 				canvas.drawLine(mtest.getx0(), mtest.gety0(), mtest.getx1(),mtest.gety1(), mPaint);
 				
 				EdeMain.updateCoord(lineID, arraySize, mtest.getx1(), mtest.gety1());
+				
 				}
 				
 			}	
@@ -107,7 +153,9 @@ public class EdeView extends View{
 				{
 					EdeMain.errorDump(e);
 				}
-			
+				
+				
+		}
 		}
 //place undoBtn here because non-static call	
 	public void undo()
@@ -124,18 +172,22 @@ public class EdeView extends View{
 		{
 			lineArray.remove(0);
 			xCur=0;
-			Log.v(EdeMain.LOG_TAG, "my xCur"+ xCur);
+			//Log.v(EdeMain.LOG_TAG, "my xCur"+ xCur);
 			lineID--;
 			invalidate();
 		}
-//		
-//		invalidate();
-//		lineArray.remove(0);
-//		LineInfo test = lineArray.get(0);
-//		Log.v(EdeMain.LOG_TAG, "my array size: "+ test.getx0()+"-" + test.gety0() + "-"+ test.getx1()+ "-" +test.gety1() );
-//		invalidate();
+		
+		
+
 	}
 	
+	public void zoom12(){
+		sx = 1.2f;
+		sy = 1.2f;
+		px = 10;
+		py = 10;
+		invalidate();
+	}
 }
 
 

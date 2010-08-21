@@ -19,7 +19,8 @@ public class EdeMain extends Activity {
    public static final String LOG_TAG = "iupac";
    static TextView coord;
    public static Button undoBtn;
- 
+   public static Button exitBtn;
+   public static Button zoom12;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,11 +41,28 @@ public class EdeMain extends Activity {
             }
 		 });
 		
+		EdeMain.zoom12 = (Button) findViewById(R.id.zoom12);
+		EdeMain.zoom12.setTextColor(Color.BLACK);
+		EdeMain.zoom12.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	EdeView edeView;
+            	edeView = (EdeView) findViewById(R.id.EdeView);
+            	edeView.zoom12();
+            }
+		 });
+		
+		EdeMain.exitBtn = (Button) findViewById(R.id.exitBtn);
+		EdeMain.exitBtn.setTextColor(Color.BLACK);
+		EdeMain.exitBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	System.exit(0);
+            }
+		 });
 	    
     }
     
     public static  void updateCoord(float x0, float y0, float x1, float y1 ){
-    	//coord.setText("LineID: " + x0 + " - ArrSize: "  + y0 + "             x1: " + x1 + " - y1: " + y1 ); 	
+    	coord.setText("LineID: " + x0 + " - ArrSize: "  + y0 + "             x1: " + x1 + " - y1: " + y1 ); 	
     	
     }
     
@@ -63,7 +81,7 @@ public class EdeMain extends Activity {
     
     public static void mathOutput(float x, float y)
     {
-    	coord.append( " -- "+ "mathOutput: " + x + " " + y);    	
+    	//coord.append( "\n "+ "mathOutput: " + x + " " + y);    	
     }
     
     

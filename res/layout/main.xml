@@ -3,24 +3,53 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+	android:layout_weight="1"
     >
+
 		<TextView  
 			android:id="@+id/coord"
 		    android:layout_width="fill_parent" 
 		    android:layout_height="wrap_content" 
 		/>
-		<com.beehai.iupac.EdeView
-			android:id="@+id/EdeView"
-			android:layout_width="fill_parent"
-			android:layout_height="350px"
-		/>
-	   <Button
+
+ <TableRow  
+ 	android:orientation="horizontal"
+ 	android:layout_width="fill_parent"
+ 	android:layout_height="wrap_content"  
+ 	>
+
+ <Button
         android:id="@+id/undoBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="10dip"
+        android:layout_gravity="left"
         android:text="Undo" />
-
+        
+         <Button
+        android:id="@+id/zoom12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dip"
+        android:layout_gravity="right"
+        android:text="Zoom 1.4x" />
+		
+		 <Button
+        android:id="@+id/exitBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dip"
+        android:layout_gravity="right"
+        android:text="Exit" />
+</TableRow>
+		<com.beehai.iupac.EdeView
+			android:id="@+id/EdeView"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+		/>
+ 
 		
 </LinearLayout>
