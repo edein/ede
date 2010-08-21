@@ -43,7 +43,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginLeft="10dip"
         android:layout_gravity="right"
-        android:text="Exit" />
+        android:text="Exit " />
 </TableRow>
 		<com.beehai.iupac.EdeView
 			android:id="@+id/EdeView"

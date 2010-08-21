@@ -30,7 +30,9 @@ public class EdeView extends View{
 	float sy = 1;
 	float px;
 	float py;
-
+	float tx;
+	float ty;
+	
 	public EdeView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub		
@@ -42,16 +44,18 @@ public class EdeView extends View{
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
+		float initTime = event.getDownTime();
+		float curTime = event.getEventTime();
+		float downTime = curTime - initTime;
 		
-		
-
+		if( downTime <1000)
+		{
+			Log.v("utsite stuff", "utsit downtime: " + downTime);
 		   if (event.getAction() == MotionEvent.ACTION_DOWN) {
 		        mx0 = event.getX();
 		        my0 = event.getY();
 		    }
-		    else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-		    	
-		    }
+		    
 		    else if (event.getAction() == MotionEvent.ACTION_UP){
 		    	mx1 = event.getX();
 		    	my1 = event.getY();
@@ -64,7 +68,7 @@ public class EdeView extends View{
 		    else {
 		        // manage any other MotionEvent
 		    }
-
+		   
 		 
 		
 		
@@ -74,13 +78,26 @@ public class EdeView extends View{
 		
 		
 		
-		
 		//EdeMain.updateCoord(xStartv, yStartv, xEndv, yEndv);
 		//EdeMain.checkProxim(xStartv, yStartv, xEndv, yEndv, xCur, yCur);
 		
 		invalidate();
-		return true;
+		
 		}
+		
+		else if (downTime >2000) {
+
+			Log.v("utsite stuff", "utsit downtime: " + downTime);
+			
+	    	tx = xCur;
+	    	ty = yCur;
+	    	invalidate();
+			
+	    }
+		return true;
+		
+		
+	}
 	
 	private void fillArray(int ID, float x0, float y0, float x1, float y1)
 	{
@@ -93,7 +110,8 @@ public class EdeView extends View{
 	@Override
 	public void onDraw(Canvas canvas)
 		{
-		
+		if (tx>1)
+		canvas.translate(tx, ty);
 		
 		if (sx==1.2f)
 		{
@@ -176,7 +194,6 @@ public class EdeView extends View{
 			lineID--;
 			invalidate();
 		}
-		
 		
 
 	}
