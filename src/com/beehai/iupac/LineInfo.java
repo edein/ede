@@ -1,6 +1,9 @@
 package com.beehai.iupac;
 
+import java.util.ArrayList;
+
 import android.content.Context;
+import android.util.Log;
 
 public class LineInfo{
 	
@@ -10,6 +13,12 @@ public class LineInfo{
 	private float y1;
 	
 	private int lineID;
+	
+	public static ArrayList<LineInfo> lineArray = new ArrayList<LineInfo>();
+	public static int lineCount = 0;
+	
+	public float[] endPointConnected;
+	public float[] startPointConnected;
 	
 	public LineInfo(){
 		
@@ -49,4 +58,25 @@ public class LineInfo{
 	{
 		return this.lineID;
 	}
+	public void setStartPointConnect(float x0, float y0)
+	{
+		startPointConnected[0] = x0;
+		startPointConnected[1] = y0;
+	}
+	public void setEndPointConnect(float x1, float y1)
+	{
+		endPointConnected[0] = x1;
+		endPointConnected[1] = y1;
+	}
+	
+	public static void fillArray(float x0, float y0, float x1, float y1)
+	{
+		LineInfo mLineInfo = new LineInfo();
+		mLineInfo.setLineInfo(lineCount, x0, y0, x1, y1);
+		Log.v("TestView", "line ID: " + lineCount +" "+"x0: "+x0 +" "+ "y0: "+y0+" "+"x1: "+ x1+" "+"y1: "+ y1);
+		lineArray.add(mLineInfo);
+		lineCount++;
+	}
+	
+	
 }
