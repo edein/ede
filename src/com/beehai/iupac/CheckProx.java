@@ -1,7 +1,5 @@
 package com.beehai.iupac;
 
-import android.util.Log;
-
 public class CheckProx {
 	
 	private float[] trueValue = new float[4];
@@ -25,7 +23,6 @@ public class CheckProx {
 			   {
 						trueValue[0]= x0;
 				   		trueValue[1] = y0;
-				   		//LineInfo.lineArray.get(i).setStartPointConnect(x0, y0);
 				   		changed= true;
 //				   		Log.v("test", "inside closeBy first not LOCKED");
 			   }

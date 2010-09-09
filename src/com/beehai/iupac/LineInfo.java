@@ -17,8 +17,9 @@ public class LineInfo{
 	public static ArrayList<LineInfo> lineArray = new ArrayList<LineInfo>();
 	public static int lineCount = 0;
 	
-	public float[] endPointConnected;
-	public float[] startPointConnected;
+	private int connectedPoint;
+	
+	private boolean methane=false;
 	
 	public LineInfo(){
 		
@@ -58,25 +59,52 @@ public class LineInfo{
 	{
 		return this.lineID;
 	}
-	public void setStartPointConnect(float x0, float y0)
-	{
-		startPointConnected[0] = x0;
-		startPointConnected[1] = y0;
-	}
-	public void setEndPointConnect(float x1, float y1)
-	{
-		endPointConnected[0] = x1;
-		endPointConnected[1] = y1;
-	}
-	
-	public static void fillArray(float x0, float y0, float x1, float y1)
+	public void fillArray(float x0, float y0, float x1, float y1)
 	{
 		LineInfo mLineInfo = new LineInfo();
-		mLineInfo.setLineInfo(lineCount, x0, y0, x1, y1);
-		Log.v("TestView", "line ID: " + lineCount +" "+"x0: "+x0 +" "+ "y0: "+y0+" "+"x1: "+ x1+" "+"y1: "+ y1);
-		lineArray.add(mLineInfo);
-		lineCount++;
+		//***Check if its a Methane CH4
+		float xTotal= Math.abs((x0-x1));
+		float yTotal = Math.abs((y0-y1));
+		//******************************
+		if (xTotal <20 && yTotal <20)
+		{
+			mLineInfo.methane= true;
+			mLineInfo.connectedPoint= 0;
+			mLineInfo.setLineInfo(lineCount, x0, y0, x0, y0);
+			lineArray.add(mLineInfo);
+			lineCount++;
+			Log.v("TestView", "Methane line ID: " + lineCount +" "+"x0: "+x0 +" "+ "y0: "+y0+" "+"x1: "+ x1+" "+"y1: "+ y1);
+		}
+		else
+		{
+			mLineInfo.setLineInfo(lineCount, x0, y0, x1, y1);
+			Log.v("TestView", "line ID: " + lineCount +" "+"x0: "+x0 +" "+ "y0: "+y0+" "+"x1: "+ x1+" "+"y1: "+ y1);
+			lineArray.add(mLineInfo);
+			lineCount++;
+		}
 	}
 	
+	public void setConnectedPoint(int point)
+	{
+		connectedPoint += point;
+		return;
+	}
+	public int getConnectedPoint()
+	{
+		return connectedPoint;
+	}
+	public static void resetConnectedPoint()
+	{
+		int arraySize = lineArray.size();
+		for ( int i=0; i < arraySize; i++)
+		{
+		lineArray.get(i).connectedPoint = 0;
+		}
+	}
+	
+	public boolean checkMethane()
+	{
+		return methane;
+	}
 	
 }

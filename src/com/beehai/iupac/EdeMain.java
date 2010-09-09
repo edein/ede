@@ -3,13 +3,16 @@ package com.beehai.iupac;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,7 +24,7 @@ public class EdeMain extends Activity {
    public static Button undoBtn;
    ToggleButton translateToggle;
    public static Button exitBtn;
-   public static Button zoom12;
+   public static Button getName;
    
    static GestureDetector myDetector;
    
@@ -45,13 +48,20 @@ public class EdeMain extends Activity {
             }
 		 });
 		
-		EdeMain.zoom12 = (Button) findViewById(R.id.zoom12);
-		EdeMain.zoom12.setTextColor(Color.BLACK);
-		EdeMain.zoom12.setOnClickListener(new View.OnClickListener() {
+		EdeMain.getName = (Button) findViewById(R.id.getName);
+		EdeMain.getName.setTextColor(Color.BLACK);
+		EdeMain.getName.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	EdeView edeView;
-            	edeView = (EdeView) findViewById(R.id.EdeView);
-            	edeView.zoom12();
+            	GetName getName;
+            	getName = new GetName();
+
+            	Context context = getApplicationContext();
+            	LineInfo.resetConnectedPoint();
+            	CharSequence text = getName.name();
+            	int duration = Toast.LENGTH_LONG;
+
+            	Toast toast = Toast.makeText(context, text, duration);
+            	toast.show();
             }
 		 });
 		

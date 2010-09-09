@@ -32,13 +32,13 @@
         android:textOff="TranslateOFF" />
         
          <Button
-        android:id="@+id/zoom12"
+        android:id="@+id/getName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="10dip"
         android:layout_gravity="right"
-        android:text="Zoom" />
+        android:text="GetName" />
 		
 		 <Button
         android:id="@+id/exitBtn"

@@ -1,17 +1,14 @@
 package com.beehai.iupac;
 
-import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 
 public class EdeView extends View implements OnGestureListener{
 
@@ -27,7 +24,7 @@ public class EdeView extends View implements OnGestureListener{
 	
 	static boolean translate = false;
 	
-	
+	LineInfo lineInfo = new LineInfo();//used to fill in lineArray
 	
 	Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	Bitmap mBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888); //place to draw lines onto
@@ -35,6 +32,8 @@ public class EdeView extends View implements OnGestureListener{
 	Canvas cc = new Canvas(mBitmap); //hold lines to draw onto mBitmap
 	
 	CheckProx checkProx = new CheckProx();
+	
+	int connectedPoint;
 //	float sx = 1;
 //	float sy = 1;
 //	float px;
@@ -67,8 +66,10 @@ public class EdeView extends View implements OnGestureListener{
 							   {
 							   		 x0=checkProx.getx0();
 							   		 y0=checkProx.gety0();
-							   	}
+							   }
+					   		
 					}
+				
 				//place proximity checking here***************** 
 		    }
 		   if (event.getAction() == MotionEvent.ACTION_UP) 
@@ -83,10 +84,13 @@ public class EdeView extends View implements OnGestureListener{
 							   		 x1=checkProx.getx0();
 							   		 y1=checkProx.gety0();
 							   	}
+					   		
 					}
+				   
 				//place proximity checking here*****************
 		    	xCur=0; //reset so Draw current line is correct
-		    	LineInfo.fillArray(x0, y0, x1, y1);
+		    	lineInfo.fillArray(x0, y0, x1, y1);
+		    	
 		    	doDraw(); //draw lines into mBitmap
 		        
 				//Log.v(EdeMain.LOG_TAG, "lineArray Size: " +LineInfo.lineArray.size());
@@ -145,7 +149,7 @@ public class EdeView extends View implements OnGestureListener{
 						}
 					//place proximity checking here*****************
 					xCur=0;
-			        LineInfo.fillArray(x0, y0, x1, y1);
+			        lineInfo.fillArray(x0, y0, x1, y1);
 			        doDraw();
 			    }
 				
@@ -231,8 +235,22 @@ public class EdeView extends View implements OnGestureListener{
 			int arraySize = LineInfo.lineArray.size();
 				for (int i = 	0; i <arraySize; i++)
 				{
-				LineInfo mtest = (LineInfo) LineInfo.lineArray.get(i);
-				cc.drawLine(mtest.getx0(), mtest.gety0(), mtest.getx1(),mtest.gety1(), paint);						
+					LineInfo mtest = (LineInfo) LineInfo.lineArray.get(i);
+					cc.drawLine(mtest.getx0(), mtest.gety0(), mtest.getx1(),mtest.gety1(), paint);
+					
+					Paint textPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
+					textPaint.setColor(Color.BLACK);
+					
+					if(mtest.checkMethane())
+					{
+						cc.drawText("CH4", mtest.getx0(), mtest.gety0(), textPaint);	
+					}
+					else
+					{
+						cc.drawText("CH3", mtest.getx0(), mtest.gety0(), textPaint);
+						cc.drawText("CH3", mtest.getx1(), mtest.gety1(), textPaint);
+							
+					}
 				}
 		}	
 			catch(Exception e)
