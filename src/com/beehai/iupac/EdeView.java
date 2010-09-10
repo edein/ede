@@ -89,7 +89,7 @@ public class EdeView extends View implements OnGestureListener{
 				   
 				//place proximity checking here*****************
 		    	xCur=0; //reset so Draw current line is correct
-		    	lineInfo.fillArray(x0, y0, x1, y1);
+		    	lineInfo.matchCheck(x0, y0, x1, y1);
 		    	
 		    	doDraw(); //draw lines into mBitmap
 		        
@@ -149,7 +149,7 @@ public class EdeView extends View implements OnGestureListener{
 						}
 					//place proximity checking here*****************
 					xCur=0;
-			        lineInfo.fillArray(x0, y0, x1, y1);
+			        lineInfo.matchCheck(x0, y0, x1, y1);
 			        doDraw();
 			    }
 				
@@ -241,7 +241,7 @@ public class EdeView extends View implements OnGestureListener{
 					Paint textPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
 					textPaint.setColor(Color.BLACK);
 					
-					if(mtest.checkMethane())
+					if(mtest.methaneCheck())
 					{
 						cc.drawText("CH4", mtest.getx0(), mtest.gety0(), textPaint);	
 					}
@@ -249,7 +249,6 @@ public class EdeView extends View implements OnGestureListener{
 					{
 						cc.drawText("CH3", mtest.getx0(), mtest.gety0(), textPaint);
 						cc.drawText("CH3", mtest.getx1(), mtest.gety1(), textPaint);
-							
 					}
 				}
 		}	
