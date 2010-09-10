@@ -107,7 +107,7 @@ public class LineInfo{
 			}
 			else if (x1==obj2_x1 && y1 == obj2_y1)
 			{
-				match = true;
+				match = true;	
 				matchGroupID = obj2.getGroupID();
 				Log.v("inside 4IF", " ");
 				break;
@@ -115,10 +115,13 @@ public class LineInfo{
 			else
 			{
 				match = false;
-				highestGroupID = obj2.getGroupID();
+				
 				Log.v("inside ELSE", " ");
 //				Log.v("GetName inside ELSE", "lineID(G):"+obj2.getID()+"("+obj2.getGroupID()+")");
-			}	
+			}
+			
+			if( obj2.getGroupID() > highestGroupID)
+			highestGroupID = obj2.getGroupID();
 			
 		}
 		//**************************************************************************************
