@@ -99,6 +99,7 @@ public class GetName {
 									 " lineID:"+ mLine.getID()+
 									 " ConnectedPoints:"+ mLine.getConnectedPoint()+
 									 " connctedAtomType:"+atomType[0]+atomType[1]+atomType[2]+atomType[3] );
+			
 				
 			}
 		}

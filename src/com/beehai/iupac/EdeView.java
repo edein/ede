@@ -257,28 +257,34 @@ public class EdeView extends View implements OnGestureListener{
 //place undoBtn here because non-static call	
 	public void undo()
 	{
-		//int arraySize = LineInfo.lineVector.size();
 		
-			int lineSize= LineInfo.groupVector.get(groupSize).size();
-			LineInfo.groupVector.get(groupSize).remove(lineSize - 1);
-//			LineInfo prevLine= LineInfo.groupVector.get(groupSize).get(lineSize);
-//			prevLine.set
+		int mGroupSize =LineInfo.groupVector.size(); 
+		Log.v("insideUNDO_TOP","groupSize:" + mGroupSize);
+		int lineSize= LineInfo.groupVector.get(mGroupSize-1).size();
+		//int arraySize = LineInfo.lineVector.size();
+		if(lineSize>1)
+		{
+			LineInfo.groupVector.get(mGroupSize-1).remove(lineSize - 1);
+			LineInfo prevLine= LineInfo.groupVector.get(mGroupSize-1).get(lineSize-2);
+			prevLine.removeConnectedAtom();
+			prevLine.removeConnectedPoint();
 			xCur=0;
 			LineInfo.lineCount--;
 			doDraw(); //call doDraw to invoke cc.drawColor to invalidate();
 			invalidate();
-
-//		else if(groupSize == 1)
-//		{
-//			//LineInfo.lineVector.remove(0);
-//			xCur=0;
-//			//Log.v(EdeMain.LOG_TAG, "my xCur"+ xCur);
-//			LineInfo.lineCount--;
-//			doDraw(); //
-//			invalidate();
-//		}
-//		
-
+		}
+		else if(lineSize == 1)
+		{
+			LineInfo.groupVector.get(mGroupSize-1).remove(0);
+//			LineInfo prevLine= LineInfo.groupVector.get(groupSize).get(lineSize-2);
+//			prevLine.removeConnectedAtom();
+			//LineInfo.lineVector.remove(0);
+			LineInfo.groupVector.remove(mGroupSize-1);
+			xCur=0;
+			LineInfo.lineCount--;
+			doDraw(); //
+			invalidate();
+		}
 	}
 	
 	public void zoom12(){

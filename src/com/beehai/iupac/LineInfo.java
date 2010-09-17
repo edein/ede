@@ -327,6 +327,10 @@ public class LineInfo{
 	{
 		return connectedPoint;
 	}
+	public void removeConnectedPoint()
+	{
+		this.connectedPoint-=1;
+	}
 	public static void resetConnectedPoint()
 	{
 //		int arraySize = lineVector.size();
@@ -356,6 +360,11 @@ public class LineInfo{
 	public LineInfo[] getConnectedAtom()
 	{
 		return connectedAtom;
+	}
+	public void removeConnectedAtom()
+	{
+		this.connectedAtom[this.connectedAtomCounter-1]=null;
+		this.connectedAtomCounter--;
 	}
 	
 	public String getAtomTypeByLetter()
