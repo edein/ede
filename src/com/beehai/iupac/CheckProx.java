@@ -1,8 +1,10 @@
 package com.beehai.iupac;
 
+import android.util.Log;
+
 public class CheckProx {
 	
-	private float[] trueValue = new float[4];
+	private float[] matchValue = new float[4];
 
 	public CheckProx()
 	{	  
@@ -11,27 +13,32 @@ public class CheckProx {
 	public boolean closeBy(float xCur, float yCur)
 	{
 		boolean changed =false;
-		int arraySize = LineInfo.lineArray.size();
-		for (int i = 0; i <arraySize; i++)
+		int groupSize = LineInfo.groupVector.size();
+		for (int i = 0; i <groupSize; i++)
 		{	
-			float x0 = LineInfo.lineArray.get(i).getx0();
-			float y0 = LineInfo.lineArray.get(i).gety0();
-			float x1 = LineInfo.lineArray.get(i).getx1();
-			float y1 = LineInfo.lineArray.get(i).gety1();
+			
+			for (int m = 0; m<LineInfo.groupVector.get(i).size(); m++)
+			{
+			LineInfo mLine = LineInfo.groupVector.get(i).get(m);
+			float x0 = mLine.getx0();
+			float y0 = mLine.gety0();
+			float x1 = mLine.getx1();
+			float y1 = mLine.gety1();
 				
 				if ( Math.abs(xCur - x0) <20 && Math.abs(yCur - y0) < 20 )
 			   {
-						trueValue[0]= x0;
-				   		trueValue[1] = y0;
+						matchValue[0]= x0;
+				   		matchValue[1] = y0;
 				   		changed= true;
-//				   		Log.v("test", "inside closeBy first not LOCKED");
 			   }
-				if ( Math.abs(xCur - x1) <20 && Math.abs(yCur - y1) < 20)
-			   {
-					   	trueValue[0]= x1;
-				   		trueValue[1] = y1;
-				   		changed=true;
-			   }
+//				if ( Math.abs(xCur - y1) <20 && Math.abs(yCur - y1) < 20)
+//			   {
+//					   	matchValue[2]= x1;
+//				   		matchValue[3]= y1;
+//				   		Log.v("inside closeBy", "");
+//				   		changed=true;
+//			   }
+			}
 		}
 		
 		return changed;
@@ -43,19 +50,19 @@ public class CheckProx {
 	
 	public float getx0()
 	{
-		return trueValue[0];
+		return matchValue[0];
 	}
 	public float gety0()
 	{
-		return trueValue[1];
+		return matchValue[1];
 	}
 	public float getx1()
 	{
-		return trueValue[2];
+		return matchValue[2];
 	}
 	public float gety1()
 	{
-		return trueValue[3];
+		return matchValue[3];
 	}
 	
 	

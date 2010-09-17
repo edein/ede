@@ -25,6 +25,7 @@ public class EdeMain extends Activity {
    ToggleButton translateToggle;
    public static Button exitBtn;
    public static Button getName;
+   public static ToggleButton switchAtom;
    
    static GestureDetector myDetector;
    
@@ -56,7 +57,7 @@ public class EdeMain extends Activity {
             	getName = new GetName();
 
             	Context context = getApplicationContext();
-            	LineInfo.resetConnectedPoint();
+            	//LineInfo.resetConnectedPoint();
             	CharSequence text = getName.name();
             	int duration = Toast.LENGTH_LONG;
 
@@ -84,6 +85,21 @@ public class EdeMain extends Activity {
                 }
             }
 		 });
+        
+        switchAtom = (ToggleButton) findViewById(R.id.switchAtom);
+        switchAtom.setTextColor(Color.BLACK);
+        switchAtom.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) 
+            {
+            	if (switchAtom.isChecked()) {
+                    LineInfo.atomCurrent=2;
+                } else {
+                    LineInfo.atomCurrent=1;
+                }
+            	
+            }
+		 });
+        
 	    
     }
 

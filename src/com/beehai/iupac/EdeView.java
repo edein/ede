@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,6 +34,8 @@ public class EdeView extends View implements OnGestureListener{
 	
 	CheckProx checkProx = new CheckProx();
 	
+	int groupSize = LineInfo.groupVector.size();
+	
 	int connectedPoint;
 //	float sx = 1;
 //	float sy = 1;
@@ -40,7 +43,6 @@ public class EdeView extends View implements OnGestureListener{
 //	float py;
 //	float tx;
 //	float ty;
-	
 	public EdeView(Context context, AttributeSet attrs) 
 	{
 		super(context, attrs);
@@ -48,7 +50,6 @@ public class EdeView extends View implements OnGestureListener{
 		paint.setColor(Color.WHITE);
 		paint.setStrokeWidth(3);	
 	}
-	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
@@ -60,7 +61,7 @@ public class EdeView extends View implements OnGestureListener{
 		        x0 = event.getX();
 		        y0 = event.getY();
 		    	//place proximity checking here***************** set x0,y0 to snap to closest endpoint
-				   if(LineInfo.lineArray.size()>=0)
+				   if(groupSize>=0)
 				   {
 					   		if(checkProx.closeBy(x0, y0))
 							   {
@@ -69,15 +70,14 @@ public class EdeView extends View implements OnGestureListener{
 							   }
 					   		
 					}
-				
 				//place proximity checking here***************** 
 		    }
 		   if (event.getAction() == MotionEvent.ACTION_UP) 
 			{
 		    	x1 = event.getX();
 		    	y1 = event.getY();
-		    	//place proximity checking here*****************set x1,y1 to snap to closest endpoint
-				   if(LineInfo.lineArray.size()>=0)
+//		    	place proximity checking here*****************set x1,y1 to snap to closest endpoint
+				   if(groupSize>=0)
 				   {
 					   		if(checkProx.closeBy(x1, y1))
 							   	{
@@ -86,13 +86,10 @@ public class EdeView extends View implements OnGestureListener{
 							   	}
 					   		
 					}
-				   
 				//place proximity checking here*****************
 		    	xCur=0; //reset so Draw current line is correct
 		    	lineInfo.matchCheck(x0, y0, x1, y1);
-		    	
 		    	doDraw(); //draw lines into mBitmap
-		        
 				//Log.v(EdeMain.LOG_TAG, "lineArray Size: " +LineInfo.lineArray.size());
 			}
 		   if (event.getAction() == MotionEvent.ACTION_MOVE)
@@ -100,7 +97,7 @@ public class EdeView extends View implements OnGestureListener{
 			   xCur = event.getX();
 			   yCur = event.getY();
 			 //place proximity checking here*****************set xCur,yCur to snap to closest endpoint
-			   if(LineInfo.lineArray.size()>=0)
+			   if(groupSize>=0)
 			   {
 				   		if(checkProx.closeBy(xCur, yCur))
 						   	{
@@ -122,7 +119,7 @@ public class EdeView extends View implements OnGestureListener{
 			        y0 = event.getY() + yAmountTranslated; 
 			      //place proximity checking here*****************
 
-					   if(LineInfo.lineArray.size()>=0)
+					   if(groupSize>=0)
 					   {
 						   		if(checkProx.closeBy(x0, y0))
 								   {
@@ -139,7 +136,7 @@ public class EdeView extends View implements OnGestureListener{
 			        y1 = event.getY() +yAmountTranslated;  
 			        
 			        //place proximity checking here*****************
-					   if(LineInfo.lineArray.size()>=0)
+					   if(groupSize>=0)
 					   {
 						   		if(checkProx.closeBy(x1, y1))
 								   	{
@@ -158,7 +155,7 @@ public class EdeView extends View implements OnGestureListener{
 					xCur = event.getX() +xAmountTranslated;
 					yCur = event.getY() +yAmountTranslated;
 					 //place proximity checking here*****************
-					   if(LineInfo.lineArray.size()>=0)
+					   if(groupSize>=0)
 					   {
 						   		if(checkProx.closeBy(xCur, yCur))
 								   	{
@@ -177,6 +174,61 @@ public class EdeView extends View implements OnGestureListener{
 		return true	;
 	}
 	
+	public void doDraw() //draw lines from lineArray into mBitmap
+	{
+		cc.drawColor(Color.CYAN); // works as invalidate() since this is custom canvas+bitmap
+		Paint textPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
+		textPaint.setColor(Color.BLACK);
+		
+		int groupSize = LineInfo.groupVector.size();
+		for (int i=0; i <groupSize; i++)
+		{
+			int lineSize =LineInfo.groupVector.get(i).size();
+			if( lineSize==1)
+			{
+				LineInfo mLine = (LineInfo) LineInfo.groupVector.get(i).get(0);
+				if(mLine.getAtomType()==1)
+				{
+					cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+				}
+			}
+			else
+			{
+				for(int m=0;m < lineSize; m++)
+				{
+					LineInfo mLine = (LineInfo) LineInfo.groupVector.get(i).get(m);
+					LineInfo[] connectedAtoms = mLine.getConnectedAtom();
+					for(int n=0; n<connectedAtoms.length;n++)
+					{
+						if(connectedAtoms[n]!=null)
+						{
+							cc.drawLine(mLine.getx0(), mLine.gety0(), connectedAtoms[n].getx0(),connectedAtoms[n].gety0(), paint);
+							if (mLine.getConnectedPoint()==1)
+									cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+							if (mLine.getConnectedPoint()==2)
+								cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+							if (mLine.getConnectedPoint()==3)
+								cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+							if (mLine.getConnectedPoint()==4)
+								cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+//							if (connectedAtoms[n].getConnectedPoint()==1)
+//								cc.drawText(mLine.getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);
+//							if (connectedAtoms[n].getConnectedPoint()==2)
+//								cc.drawText(mLine.getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);
+//							if (connectedAtoms[n].getConnectedPoint()==3)
+//								cc.drawText(mLine.getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);
+//							
+							if (connectedAtoms[n].getCycloPoint()[0] >=1)
+							{
+								cc.drawLine(connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), connectedAtoms[n].getCycloPoint()[0],connectedAtoms[n].getCycloPoint()[1], paint);
+							}
+						}
+					}
+					
+				}		
+			}	
+		}
+	}
 	
 	@Override
 	public void onDraw(Canvas c)
@@ -205,56 +257,28 @@ public class EdeView extends View implements OnGestureListener{
 //place undoBtn here because non-static call	
 	public void undo()
 	{
-		int arraySize = LineInfo.lineArray.size();
-		if(arraySize > 1)
-			{
-			LineInfo.lineArray.remove(arraySize - 1);
+		//int arraySize = LineInfo.lineVector.size();
+		
+			int lineSize= LineInfo.groupVector.get(groupSize).size();
+			LineInfo.groupVector.get(groupSize).remove(lineSize - 1);
+//			LineInfo prevLine= LineInfo.groupVector.get(groupSize).get(lineSize);
+//			prevLine.set
 			xCur=0;
 			LineInfo.lineCount--;
 			doDraw(); //call doDraw to invoke cc.drawColor to invalidate();
 			invalidate();
-			}
-		else if(arraySize == 1)
-		{
-			LineInfo.lineArray.remove(0);
-			xCur=0;
-			//Log.v(EdeMain.LOG_TAG, "my xCur"+ xCur);
-			LineInfo.lineCount--;
-			doDraw(); //
-			invalidate();
-		}
-		
 
-	}
-	
-	private void doDraw() //draw lines from lineArray into mBitmap
-	{
-		cc.drawColor(Color.CYAN); // works as invalidate() since this is custom canvas+bitmap
-		try
-		{ 
-			int arraySize = LineInfo.lineArray.size();
-				for (int i = 	0; i <arraySize; i++)
-				{
-					LineInfo mtest = (LineInfo) LineInfo.lineArray.get(i);
-					cc.drawLine(mtest.getx0(), mtest.gety0(), mtest.getx1(),mtest.gety1(), paint);
-					
-					Paint textPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
-					textPaint.setColor(Color.BLACK);
-					
-					if(mtest.methaneCheck())
-					{
-						cc.drawText("CH4", mtest.getx0(), mtest.gety0(), textPaint);	
-					}
-					else
-					{
-						cc.drawText("CH3", mtest.getx0(), mtest.gety0(), textPaint);
-						cc.drawText("CH3", mtest.getx1(), mtest.gety1(), textPaint);
-					}
-				}
-		}	
-			catch(Exception e)
-			{
-			}
+//		else if(groupSize == 1)
+//		{
+//			//LineInfo.lineVector.remove(0);
+//			xCur=0;
+//			//Log.v(EdeMain.LOG_TAG, "my xCur"+ xCur);
+//			LineInfo.lineCount--;
+//			doDraw(); //
+//			invalidate();
+//		}
+//		
+
 	}
 	
 	public void zoom12(){

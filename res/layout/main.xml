@@ -17,37 +17,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dip"
+        android:layout_marginLeft="5dip"
         android:layout_gravity="left"
         android:text="Undo" />
+        
+         <ToggleButton
+        android:id="@+id/switchAtom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="5dip"
+        android:layout_gravity="left"
+        android:textOn="Br"
+        android:textOff="C" />
         
         <ToggleButton
         android:id="@+id/translateToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dip"
+        android:layout_marginLeft="5dip"
         android:layout_gravity="left"
-        android:textOn="TranslateOn"
-        android:textOff="TranslateOFF" />
+        android:textOn="Trnslt"
+        android:textOff="Trnslt" />
         
          <Button
         android:id="@+id/getName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dip"
+        android:layout_marginLeft="5dip"
         android:layout_gravity="right"
-        android:text="GetName" />
+        android:text="Name" />
 		
 		 <Button
         android:id="@+id/exitBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dip"
+        android:layout_marginLeft="5dip"
         android:layout_gravity="right"
-        android:text="Exit " />
+        android:text="Exit" />
 </TableRow>
 		<com.beehai.iupac.EdeView
 			android:id="@+id/EdeView"
