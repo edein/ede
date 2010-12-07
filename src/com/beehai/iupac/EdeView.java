@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector.OnGestureListener;
@@ -29,6 +31,8 @@ public class EdeView extends View implements OnGestureListener{
 	
 	Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	Bitmap mBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888); //place to draw lines onto
+	
+	Paint paintCloseBy = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 	Canvas cc = new Canvas(mBitmap); //hold lines to draw onto mBitmap
 	
@@ -37,6 +41,7 @@ public class EdeView extends View implements OnGestureListener{
 	int groupSize = LineInfo.groupVector.size();
 	
 	int connectedPoint;
+	
 //	float sx = 1;
 //	float sy = 1;
 //	float px;
@@ -67,6 +72,11 @@ public class EdeView extends View implements OnGestureListener{
 							   {
 							   		 x0=checkProx.getx0();
 							   		 y0=checkProx.gety0();
+							   		 
+							   		 paintCloseBy.setColor(Color.BLUE);
+							   		 paintCloseBy.setAlpha(30);
+							   		 paintCloseBy.setStyle(Style.FILL_AND_STROKE);
+							   		 cc.drawCircle(x0, y0, 90, paintCloseBy);
 							   }
 					   		
 					}
@@ -103,6 +113,11 @@ public class EdeView extends View implements OnGestureListener{
 						   	{
 						   		 xCur=checkProx.getx0();
 						   		 yCur=checkProx.gety0();
+						   		
+					   			 paintCloseBy.setColor(Color.LTGRAY);
+					   			 paintCloseBy.setStyle(Style.STROKE);
+					   			 cc.drawCircle(xCur, yCur, 90, paintCloseBy);
+						   		 
 						   	}
 				}
 			  //place proximity checking here*****************
@@ -222,6 +237,7 @@ public class EdeView extends View implements OnGestureListener{
 							{
 								cc.drawLine(connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), connectedAtoms[n].getCycloPoint()[0],connectedAtoms[n].getCycloPoint()[1], paint);
 							}
+//							if (connectedAtoms[n].)
 						}
 					}
 					
@@ -259,31 +275,50 @@ public class EdeView extends View implements OnGestureListener{
 	{
 		
 		int mGroupSize =LineInfo.groupVector.size(); 
-		Log.v("insideUNDO_TOP","groupSize:" + mGroupSize);
-		int lineSize= LineInfo.groupVector.get(mGroupSize-1).size();
-		//int arraySize = LineInfo.lineVector.size();
-		if(lineSize>1)
+		if(mGroupSize>=1)	
 		{
-			LineInfo.groupVector.get(mGroupSize-1).remove(lineSize - 1);
-			LineInfo prevLine= LineInfo.groupVector.get(mGroupSize-1).get(lineSize-2);
-			prevLine.removeConnectedAtom();
-			prevLine.removeConnectedPoint();
-			xCur=0;
-			LineInfo.lineCount--;
-			doDraw(); //call doDraw to invoke cc.drawColor to invalidate();
-			invalidate();
-		}
-		else if(lineSize == 1)
-		{
-			LineInfo.groupVector.get(mGroupSize-1).remove(0);
-//			LineInfo prevLine= LineInfo.groupVector.get(groupSize).get(lineSize-2);
-//			prevLine.removeConnectedAtom();
-			//LineInfo.lineVector.remove(0);
-			LineInfo.groupVector.remove(mGroupSize-1);
-			xCur=0;
-			LineInfo.lineCount--;
-			doDraw(); //
-			invalidate();
+			int lineSize= LineInfo.groupVector.get(mGroupSize-1).size();
+			//int arraySize = LineInfo.lineVector.size();
+			if(lineSize>1)
+			{
+				
+				LineInfo prevLine = LineInfo.groupVector.get(mGroupSize-1).get(lineSize-1);
+				LineInfo[] mConnectedAtom = prevLine.getConnectedAtom();
+				int mConnectedLength= mConnectedAtom.length;
+				for(int m=0; m < mConnectedLength; m++)
+				{
+					if(mConnectedAtom[m]!=null)
+					{
+						mConnectedAtom[m].getID();
+						mConnectedAtom[m].removeConnectedAtom();
+						mConnectedAtom[m].removeConnectedPoint();
+						for(int n=0 ; n< mConnectedAtom[m].getCycloPoint().length;n++)
+						{
+							mConnectedAtom[m].getCycloPoint()[n]=0;
+						}
+					}
+				}
+				LineInfo.groupVector.get(mGroupSize-1).remove(lineSize - 1);
+	//			LineInfo prevLine= LineInfo.groupVector.get(mGroupSize-1).get(lineSize-2);
+	//			prevLine.removeConnectedAtom();
+	//			prevLine.removeConnectedPoint();
+				xCur=0;
+				LineInfo.lineCount--;
+				doDraw(); //call doDraw to invoke cc.drawColor to invalidate();
+				invalidate();
+			}
+			else if(lineSize == 1)
+			{
+				LineInfo.groupVector.get(mGroupSize-1).remove(0);
+	//			LineInfo prevLine= LineInfo.groupVector.get(groupSize).get(lineSize-2);
+	//			prevLine.removeConnectedAtom();
+				//LineInfo.lineVector.remove(0);
+				LineInfo.groupVector.remove(mGroupSize-1);
+				xCur=0;
+				LineInfo.lineCount--;
+				doDraw(); //
+				invalidate();
+			}
 		}
 	}
 	

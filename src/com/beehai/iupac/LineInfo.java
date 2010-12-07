@@ -21,6 +21,7 @@ public class LineInfo{
 	private boolean methane=false;
 	private int atomType=-1;
 	private float[] cycloPoint= new float[2];
+	private int bond=1;
 	
 	public int groupIDCount = 0;
 	
@@ -30,7 +31,10 @@ public class LineInfo{
 	
 	public static int atomCurrent=CARBON;
 	
-	int connectedAtomCounter=0;
+	private int connectedAtomCounter=0;
+	
+	private int crawlingStatus=0;
+	private boolean crawled=false;
 	
 	public LineInfo(){
 		
@@ -45,6 +49,15 @@ public class LineInfo{
 		this.y0=y0;
 //		this.x1=x1;
 //		this.y1=y1;
+	}
+	public int getBond()
+	{
+		return this.bond;
+	}
+	public void setBond(int b)
+	{
+		if (this.bond <3)
+		this.bond += b;
 	}
 	public void setCycloPoint(float x, float y)
 	{
@@ -102,94 +115,144 @@ public class LineInfo{
 	boolean mCyclo=false;
 	LineInfo mConnectedObj =null;
 	int matchEnd=0;
-	for(int i=0; i<groupSize; i++)
+	boolean mBondFormed=false;
+	float xTotal= Math.abs((x0-x1));
+	float yTotal = Math.abs((y0-y1));
+	if(xTotal>15 || yTotal > 15)
 	{
-		boolean break2=false; //added break2 so group loop does't keep going (will set match to false)
-		int lineSize = groupVector.get(i).size();
-		//********************Check if new coords match any point and get match group ID********
-		for ( int m=0; m < lineSize; m++)
+		for(int i=0; i<groupSize; i++)
 		{
-			LineInfo obj = groupVector.get(i).get(m);
-			float obj_x0 = obj.getx0(); float obj_y0 = obj.gety0();
-//			Log.v("", "lineID:" + obj2.getID());
-			if (x0==obj_x0 && y0 == obj_y0)
+			boolean break2=false; //added break2 so group loop does't keep going (will set match to false)
+			int lineSize = groupVector.get(i).size();
+			//********************Check if new coords match any point and get match group ID********
+			for ( int m=0; m < lineSize; m++)
 			{
-				//Log.v("if", "lineID:" +obj.getID());
-				//**Cyclone is formed check if x1&y1 match ...*****************
-				for (int n=0; n< lineSize; n++)
+				LineInfo obj = groupVector.get(i).get(m);
+				float obj_x0 = obj.getx0(); float obj_y0 = obj.gety0();
+	//			Log.v("", "lineID:" + obj2.getID());
+				if (x0==obj_x0 && y0 == obj_y0)
 				{
-					LineInfo obj2= groupVector.get(i).get(n);
-					if(x1==obj2.getx0() && y1==obj2.gety0())
+					//Log.v("if", "lineID:" +obj.getID());
+					//**Cyclone/Bonds checker...*****************
+					for (int n=0; n< lineSize; n++)
 					{
-						match = true;
-						matchGroupID= obj2.getID();
-						mCyclo=true;
-						Log.v("mCylco0", " "+mCyclo);
-						obj.setCycloPoint(obj2.getx0(), obj2.gety0());
-						obj2.setCycloPoint(obj.getx0(), obj.gety0());
-						obj2.setConnectedPoint(1);
+							LineInfo obj2= groupVector.get(i).get(n);
+							if(x1==obj2.getx0() && y1==obj2.gety0())
+							{
+								//***CHECK for double/triple bonds***
+		//						LineInfo[] mBondCheck = obj.getConnectedAtom();
+		//						for (int b=0; b<mBondCheck.length;b++)
+		//						{
+		//							if(mBondCheck[b]!=null)
+		//							{
+		//								if(mBondCheck[b].getID()==obj2.getID())
+		//								{
+		//									obj.setBond(1);
+		//									obj.setConnectedPoint(1);
+		//									mBondCheck[b].setBond(1);
+		//									mBondCheck[b].setConnectedPoint(1);
+		//									mBondFormed=true;
+		//									break;
+		//								}
+		//							}
+		//						}
+								//***********************************
+		//						if(!mBondFormed)//**cyclone check
+		//						{
+								match = true;
+								matchGroupID= obj2.getGroupID();
+								mCyclo=true;
+								Log.v("insideCyClo 1", " "+mCyclo);
+								obj.setCycloPoint(obj2.getx0(), obj2.gety0());
+								obj2.setCycloPoint(obj.getx0(), obj.gety0());
+								obj2.setConnectedPoint(1);
+								
+								obj.setConnectedAtom(obj2);
+								obj2.setConnectedAtom(obj);
+								
+								break2=true;
+								break;
+		//						}
+							}
 						
-						obj.setConnectedAtom(obj2);
-						obj2.setConnectedAtom(obj);
-						break2=true;
-						break;
 					}
-				}
-				//************************************************************
-				match = true;
-				matchEnd= 1;
-				matchGroupID = obj.getGroupID();
-				obj.setConnectedPoint(1);
-				mConnectedObj=obj;
-				//Log.v("inside 1 IF", " ");
-				//break2 =true;
-				break;
-			}
-			else if(x1 == obj_x0 && y1==obj_y0)
-			{
-				
-				//**Cyclone is formed check if x0&y0 match ...*****************added this to continue looping after first match
-				for (int n=0; n< lineSize; n++)
-				{
-					LineInfo obj2= groupVector.get(i).get(n);
-					if(x0==obj2.getx0() && y0==obj2.gety0())
-					{
-						match = true;
-						matchGroupID= obj2.getID();
-						mCyclo=true;
-						//Log.v("mCylco0", " "+mCyclo);
-						obj.setCycloPoint(obj2.getx0(), obj2.gety0());
-						obj2.setCycloPoint(obj.getx0(), obj.gety0());
-						obj2.setConnectedPoint(1);
-						
-						obj.setConnectedAtom(obj2);
-						obj2.setConnectedAtom(obj);
-						break2=true;
-						break;
-					}
-				}
-				//************************************************************
-					//Log.v("eklse if", "lineID:" +obj.getID());
+					//************************************************************
 					match = true;
-					matchEnd=2;
+					matchEnd= 1;
 					matchGroupID = obj.getGroupID();
 					obj.setConnectedPoint(1);
 					mConnectedObj=obj;
+					//Log.v("inside 1 IF", " ");
+					//break2 =true;
 					break;
+				}
+				else if(x1 == obj_x0 && y1==obj_y0)
+				{
+					
+					//**Cyclone is formed check if x0&y0 match ...*****************added this to continue looping after first match
+					for (int n=0; n< lineSize; n++)
+					{
+						LineInfo obj2= groupVector.get(i).get(n);
+						if(x0==obj2.getx0() && y0==obj2.gety0())
+						{
+							//***CHECK for double/triple bonds***
+	//						LineInfo[] mBondCheck = obj.getConnectedAtom();
+	//						for (int b=0; b<mBondCheck.length;b++)
+	//						{
+	//							if(mBondCheck[b]!=null)
+	//							{
+	//								if(mBondCheck[b].getID()==obj2.getID())
+	//								{
+	//									obj.setBond(1);
+	//									obj.setConnectedPoint(1);
+	//									mBondCheck[b].setBond(1);
+	//									mBondCheck[b].setConnectedPoint(1);
+	//									mBondFormed=true;
+	//									break;
+	//								}
+	//							}
+	//						}
+							//***********************************
+	//						if(!mBondFormed)
+	//						{
+							match = true;
+							matchGroupID= obj2.getGroupID();
+							mCyclo=true;
+							//Log.v("mCylco0", " "+mCyclo);
+							obj.setCycloPoint(obj2.getx0(), obj2.gety0());
+							obj2.setCycloPoint(obj.getx0(), obj.gety0());
+							obj2.setConnectedPoint(1);
+							
+							obj.setConnectedAtom(obj2);
+							obj2.setConnectedAtom(obj);
+							break2=true;
+							break;
+	//						}
+						}
+					}
+					//************************************************************
+						//Log.v("eklse if", "lineID:" +obj.getID());
+						match = true;
+						matchEnd=2;
+						matchGroupID = obj.getGroupID();
+						obj.setConnectedPoint(1);
+						mConnectedObj=obj;
+						break;
+					
+				}
+				else
+				{
+					match = false;
+	//				Log.v("GetName inside ELSE", "lineID(G):"+obj2.getID()+"("+obj2.getGroupID()+")");
+				}
 				
+				if( obj.getGroupID() > highestGroupID)
+				highestGroupID = obj.getGroupID();
 			}
-			else
-			{
-				match = false;
-//				Log.v("GetName inside ELSE", "lineID(G):"+obj2.getID()+"("+obj2.getGroupID()+")");
-			}
-			
-			if( obj.getGroupID() > highestGroupID)
-			highestGroupID = obj.getGroupID();
+			if(break2)
+				break;
+			//**************************************************************************************
 		}
-		if(break2)
-			break;
-		//**************************************************************************************
 	}
 //		if(xTotal<20 && yTotal < 20)
 //		{
@@ -199,7 +262,7 @@ public class LineInfo{
 //		else 
 		if(groupSize>0 && match)
 		{	
-			if(mCyclo)
+			if(mCyclo || mBondFormed)
 			{
 				Log.v("inside mCyclo [true]", " ");
 			}
@@ -209,16 +272,16 @@ public class LineInfo{
 				}
 			
 		}
-		else if(groupSize>0 && !match)
+		else if(groupSize>0 && !match)//*****Feature removed Multiples groups disable**********************************
 		{
-			fillArray(x0, y0, x1, y1, highestGroupID+1, match, mConnectedObj,matchEnd);
-			groupIDCount++;
+			//fillArray(x0, y0, x1, y1, highestGroupID+1, match, mConnectedObj,matchEnd);
+			//groupIDCount++;
 			//Log.v("inside !match", " ");
 		}
 		else
 		{
-		fillArray(x0, y0, x1, y1, highestGroupID+1,match,mConnectedObj,matchEnd);
-		groupIDCount++;
+			fillArray(x0, y0, x1, y1, highestGroupID+1,match,mConnectedObj,matchEnd);
+			groupIDCount++;
 		}
 	}
 	
@@ -359,7 +422,17 @@ public class LineInfo{
 	}
 	public LineInfo[] getConnectedAtom()
 	{
-		return connectedAtom;
+		return this.connectedAtom;
+	}
+	public int getConnectedAtomSize()
+	{
+		int mCounter=0;
+		for(int i=0; i<this.connectedAtom.length;i++)
+		{
+			if (this.connectedAtom[i]!=null)
+				mCounter++;
+		}
+		return mCounter;
 	}
 	public void removeConnectedAtom()
 	{
@@ -387,4 +460,24 @@ public class LineInfo{
 		}
 		return atomLetter;
 	}
+  public void crawledSet(boolean x)
+  {
+	  this.crawled=x;
+  }
+  public boolean crawledCheck()
+  {
+	  return this.crawled;
+  }
+  public void crawlingStatusSet(int status)
+  {
+	  if (status >this.connectedAtomCounter)
+		  this.crawlingStatus=0;
+	  else
+		  this.crawlingStatus= status;
+  }
+  public int crawlingStatusGet()
+  {
+	  return this.crawlingStatus;
+  }
+	
 }

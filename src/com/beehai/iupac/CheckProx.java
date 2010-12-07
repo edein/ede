@@ -1,10 +1,13 @@
 package com.beehai.iupac;
 
+import android.content.Context;
+import android.os.Vibrator;
 import android.util.Log;
 
 public class CheckProx {
 	
 	private float[] matchValue = new float[4];
+	int matchID;
 
 	public CheckProx()
 	{	  
@@ -13,6 +16,7 @@ public class CheckProx {
 	public boolean closeBy(float xCur, float yCur)
 	{
 		boolean changed =false;
+		
 		int groupSize = LineInfo.groupVector.size();
 		for (int i = 0; i <groupSize; i++)
 		{	
@@ -30,6 +34,7 @@ public class CheckProx {
 						matchValue[0]= x0;
 				   		matchValue[1] = y0;
 				   		changed= true;
+				   		matchID= mLine.getID();
 			   }
 //				if ( Math.abs(xCur - y1) <20 && Math.abs(yCur - y1) < 20)
 //			   {
@@ -64,7 +69,10 @@ public class CheckProx {
 	{
 		return matchValue[3];
 	}
-	
+	public int getMatchID()
+	{
+		return matchID;
+	}
 	
 	public static void checkProxim(float x0, float y0, float x1, float y1)
     {
