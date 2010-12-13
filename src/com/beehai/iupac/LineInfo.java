@@ -18,10 +18,13 @@ public class LineInfo{
 	private int groupID;
 	private int connectedPoint;
 	private LineInfo connectedAtom[]= new LineInfo[4];
+	private int connectedAtomCounter=0;
 	private boolean methane=false;
 	private int atomType=-1;
 	private float[] cycloPoint= new float[2];
-	private int bond=1;
+	private LineInfo[] bondsWith= new LineInfo[3];
+	private int bondsCounter;
+	private int bond=0;
 	
 	public int groupIDCount = 0;
 	
@@ -30,8 +33,8 @@ public class LineInfo{
 	public static int lineCount = 0;
 	
 	public static int atomCurrent=CARBON;
+	public static LineInfo cycloAt=null;
 	
-	private int connectedAtomCounter=0;
 	
 	private int crawlingStatus=0;
 	private boolean crawled=false;
@@ -50,13 +53,51 @@ public class LineInfo{
 //		this.x1=x1;
 //		this.y1=y1;
 	}
+	public LineInfo bondsWithGet(int x)
+	{
+		return this.bondsWith[x];
+	}
+	public void bondsWithSet(LineInfo Atom)
+	{
+		if(this.bondsWith[0]==null)
+			this.bondsWith[0]=Atom;
+		else if(this.bondsWith[1]==null)
+			this.bondsWith[1]=Atom;
+		else
+			this.bondsWith[2]=Atom;
+	}
+	public void bondsWithRemove(LineInfo atom)
+	{
+		for(int i=0; i<this.bondsWithCounter();i++)
+		{
+			LineInfo x= this.bondsWith[i];
+			if (x==atom)
+			{
+				this.bondsWith[i]=null;
+			}
+		}
+	}
+	public int bondsWithCounter()
+	{
+		int mCounter=1;
+		for(LineInfo x: this.bondsWith)
+		{
+			if (x!=null)
+				mCounter++;
+		}
+		return mCounter;
+	}
+	public void removeBond()
+	{
+		this.bond=this.getBond() - 1;
+	}
 	public int getBond()
 	{
 		return this.bond;
 	}
 	public void setBond(int b)
 	{
-		if (this.bond <3)
+		//if (this.bond <3)
 		this.bond += b;
 	}
 	public void setCycloPoint(float x, float y)
@@ -129,40 +170,121 @@ public class LineInfo{
 			{
 				LineInfo obj = groupVector.get(i).get(m);
 				float obj_x0 = obj.getx0(); float obj_y0 = obj.gety0();
-	//			Log.v("", "lineID:" + obj2.getID());
+
 				if (x0==obj_x0 && y0 == obj_y0)
 				{
-					//Log.v("if", "lineID:" +obj.getID());
-					//**Cyclone/Bonds checker...*****************
-					for (int n=0; n< lineSize; n++)
+					//***CHECK for double/triple bonds******************
+					boolean bondCheckReturn=false;
+					LineInfo[] mBondCheck = obj.getConnectedAtom();
+					boolean breakBondCheck=false;
+					for (int b=0; b<mBondCheck.length;b++)
 					{
-							LineInfo obj2= groupVector.get(i).get(n);
-							if(x1==obj2.getx0() && y1==obj2.gety0())
+						if(mBondCheck[b]!=null)
+						{
+							if(mBondCheck[b].getx0()==x1 && mBondCheck[b].gety0()==y1)
 							{
-								//***CHECK for double/triple bonds***
-		//						LineInfo[] mBondCheck = obj.getConnectedAtom();
-		//						for (int b=0; b<mBondCheck.length;b++)
-		//						{
-		//							if(mBondCheck[b]!=null)
-		//							{
-		//								if(mBondCheck[b].getID()==obj2.getID())
-		//								{
-		//									obj.setBond(1);
-		//									obj.setConnectedPoint(1);
-		//									mBondCheck[b].setBond(1);
-		//									mBondCheck[b].setConnectedPoint(1);
-		//									mBondFormed=true;
-		//									break;
-		//								}
-		//							}
-		//						}
-								//***********************************
-		//						if(!mBondFormed)//**cyclone check
-		//						{
+//								obj.setBond(1);
+//								obj.setConnectedPoint(1);
+//								mBondCheck[b].setBond(1);
+								//mBondCheck[b].setConnectedPoint(1);
+								obj.bondsWithSet(mBondCheck[b]);
+								mBondCheck[b].bondsWithSet(obj);
+								mBondFormed=true;
+								bondCheckReturn=true;
+								match = true;
+								breakBondCheck=true;
+								break;
+							}
+						}
+					}
+					//***********************************
+					if(bondCheckReturn==false)
+					{
+					//**Cyclone/Bonds checker...*****************
+						for (int n=0; n< lineSize; n++)
+						{
+								LineInfo obj2= groupVector.get(i).get(n);
+								if(x1==obj2.getx0() && y1==obj2.gety0())
+								{
+			//						if(!mBondFormed)//**cyclone check
+			//						{
+									match = true;
+									matchGroupID= obj2.getGroupID();
+									mCyclo=true;
+									Log.v("insideCyClo 1", " "+mCyclo);
+									obj.setCycloPoint(obj2.getx0(), obj2.gety0());
+									obj2.setCycloPoint(obj.getx0(), obj.gety0());
+									obj2.setConnectedPoint(1);
+									
+									obj.setConnectedAtom(obj2);
+									obj2.setConnectedAtom(obj);
+									
+									obj.setBond(1);
+									obj2.setBond(1);
+									
+									LineInfo.cycloAt=obj; //**set cyclo obj for parser starting point
+									
+									break2=true;
+									break;
+			//						}
+								}
+							
+						}
+					//***********************************************************
+					
+					match = true;
+					matchEnd= 1;
+					matchGroupID = obj.getGroupID();
+					obj.setConnectedPoint(1);
+					mConnectedObj=obj;
+					
+					obj.setBond(1);
+					//Log.v("inside 1 IF", " ");
+					//break2 =true;
+					break;
+					}
+					if (breakBondCheck)
+						break;
+				}
+				else if(x1 == obj_x0 && y1==obj_y0)
+				{
+					//***CHECK for double/triple bonds***
+					boolean bondCheckReturn=false;
+					LineInfo[] mBondCheck = obj.getConnectedAtom();
+					boolean breakBondCheck=false;
+					for (int b=0; b<mBondCheck.length;b++)
+					{
+						if(mBondCheck[b]!=null)
+						{
+							if(mBondCheck[b].getx0()==x0 && mBondCheck[b].gety0()==y0)
+							{
+//								obj.setBond(1);
+//								obj.setConnectedPoint(1);
+//								mBondCheck[b].setBond(1);
+								//mBondCheck[b].setConnectedPoint(1);
+								obj.bondsWithSet(mBondCheck[b]);
+								mBondCheck[b].bondsWithSet(obj);
+								mBondFormed=true;
+								bondCheckReturn=true;
+								match = true;
+								breakBondCheck=true;
+								break;
+							}
+						}
+					}
+					//***********************************
+					if(bondCheckReturn==false)
+					{
+					//**Cyclone is formed check if x0&y0 match ...*****************added this to continue looping after first match
+						for (int n=0; n< lineSize; n++)
+						{
+							LineInfo obj2= groupVector.get(i).get(n);
+							if(x0==obj2.getx0() && y0==obj2.gety0())
+							{
 								match = true;
 								matchGroupID= obj2.getGroupID();
 								mCyclo=true;
-								Log.v("insideCyClo 1", " "+mCyclo);
+								//Log.v("mCylco0", " "+mCyclo);
 								obj.setCycloPoint(obj2.getx0(), obj2.gety0());
 								obj2.setCycloPoint(obj.getx0(), obj.gety0());
 								obj2.setConnectedPoint(1);
@@ -170,75 +292,30 @@ public class LineInfo{
 								obj.setConnectedAtom(obj2);
 								obj2.setConnectedAtom(obj);
 								
+								obj.setBond(1);
+								obj2.setBond(1);
+								
+								LineInfo.cycloAt=obj; //**set cyclo obj for parser starting point
+								
 								break2=true;
 								break;
 		//						}
 							}
-						
-					}
-					//************************************************************
-					match = true;
-					matchEnd= 1;
-					matchGroupID = obj.getGroupID();
-					obj.setConnectedPoint(1);
-					mConnectedObj=obj;
-					//Log.v("inside 1 IF", " ");
-					//break2 =true;
-					break;
-				}
-				else if(x1 == obj_x0 && y1==obj_y0)
-				{
-					
-					//**Cyclone is formed check if x0&y0 match ...*****************added this to continue looping after first match
-					for (int n=0; n< lineSize; n++)
-					{
-						LineInfo obj2= groupVector.get(i).get(n);
-						if(x0==obj2.getx0() && y0==obj2.gety0())
-						{
-							//***CHECK for double/triple bonds***
-	//						LineInfo[] mBondCheck = obj.getConnectedAtom();
-	//						for (int b=0; b<mBondCheck.length;b++)
-	//						{
-	//							if(mBondCheck[b]!=null)
-	//							{
-	//								if(mBondCheck[b].getID()==obj2.getID())
-	//								{
-	//									obj.setBond(1);
-	//									obj.setConnectedPoint(1);
-	//									mBondCheck[b].setBond(1);
-	//									mBondCheck[b].setConnectedPoint(1);
-	//									mBondFormed=true;
-	//									break;
-	//								}
-	//							}
-	//						}
-							//***********************************
-	//						if(!mBondFormed)
-	//						{
-							match = true;
-							matchGroupID= obj2.getGroupID();
-							mCyclo=true;
-							//Log.v("mCylco0", " "+mCyclo);
-							obj.setCycloPoint(obj2.getx0(), obj2.gety0());
-							obj2.setCycloPoint(obj.getx0(), obj.gety0());
-							obj2.setConnectedPoint(1);
-							
-							obj.setConnectedAtom(obj2);
-							obj2.setConnectedAtom(obj);
-							break2=true;
-							break;
-	//						}
 						}
-					}
-					//************************************************************
+					//************************************************************	
+					
 						//Log.v("eklse if", "lineID:" +obj.getID());
 						match = true;
 						matchEnd=2;
 						matchGroupID = obj.getGroupID();
 						obj.setConnectedPoint(1);
 						mConnectedObj=obj;
+						
+						obj.setBond(1);
 						break;
-					
+					}
+					if(breakBondCheck)
+						break;
 				}
 				else
 				{
@@ -264,7 +341,7 @@ public class LineInfo{
 		{	
 			if(mCyclo || mBondFormed)
 			{
-				Log.v("inside mCyclo [true]", " ");
+				//Log.v("inside mCyclo [true]", "test");
 			}
 			else{ 
 				fillArray(x0, y0, x1, y1, matchGroupID, match, mConnectedObj, matchEnd);
@@ -282,6 +359,7 @@ public class LineInfo{
 		{
 			fillArray(x0, y0, x1, y1, highestGroupID+1,match,mConnectedObj,matchEnd);
 			groupIDCount++;
+			//Log.v("inside last ELSE", " ");
 		}
 	}
 	
@@ -313,6 +391,7 @@ public class LineInfo{
 				mLine.setGroupID(groupID);
 				mLine.setAtomType(atomCurrent);
 				mLine.setConnectedPoint(1);
+				mLine.setBond(1);
 				mLine.setLineInfo(lineCount, x0, y0);
 				
 				lineVector.add(mLine);
@@ -323,6 +402,7 @@ public class LineInfo{
 				mLine2.setGroupID(groupID);
 				mLine2.setAtomType(atomCurrent);
 				mLine2.setConnectedPoint(1);
+				mLine2.setBond(1);
 				mLine2.setLineInfo(lineCount, x1, y1);
 				groupVector.get(groupID).add(mLine2);
 				lineCount++;
@@ -339,6 +419,7 @@ public class LineInfo{
 				mLine3.setAtomType(atomCurrent);
 				mLine3.setLineInfo(lineCount, x1, y1);
 				mLine3.setConnectedPoint(1);
+				mLine3.setBond(1);
 				groupVector.get(groupID).add(mLine3);
 				lineCount++;
 				}else{
@@ -346,6 +427,7 @@ public class LineInfo{
 					mLine3.setAtomType(atomCurrent);
 					mLine3.setLineInfo(lineCount, x0, y0);
 					mLine3.setConnectedPoint(1);
+					mLine3.setBond(1);
 					groupVector.get(groupID).add(mLine3);
 					lineCount++;
 				}
@@ -443,12 +525,14 @@ public class LineInfo{
 	public String getAtomTypeByLetter()
 	{
 		int mAtom =this.atomType;
-		int connectedPoint= this.getConnectedPoint();
+		int mBond= this.connectedPoint;
+		if(this.bondsWithCounter()>=2)
+			mBond= (this.connectedPoint-1)+this.bondsWithCounter();
 		String atomLetter= "";
 		switch(mAtom)
 		{
 			case 1: 
-				switch(connectedPoint)
+				switch(mBond)
 				{
 				case 0: atomLetter = "CH4";break;
 				case 1: atomLetter = "CH3";break;
@@ -479,5 +563,33 @@ public class LineInfo{
   {
 	  return this.crawlingStatus;
   }
-	
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }

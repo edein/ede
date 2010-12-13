@@ -1,6 +1,9 @@
 package com.beehai.iupac;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Vector;
 
 import android.util.Log;
@@ -8,7 +11,7 @@ import android.util.Log;
 public class GetName {
 
 	String name;
-	
+	Vector<Vector<LineInfo>> branches= new Vector<Vector<LineInfo>>();
 	public GetName ()
 	{
 	//	int arraySize = LineInfo.lineVector.size();
@@ -103,212 +106,279 @@ public class GetName {
 		//**********************
 		//*******LOG INFO SECTION*************
 		int branchCounter=0;		
-		Vector<Vector<LineInfo>> branches= new Vector<Vector<LineInfo>>();
-		for(int i=0; i < LineInfo.groupVector.size(); i++)
+		if(LineInfo.cycloAt!=null)//** cyclo parser ************
 		{
-			//Log.v("groupVectorSizez", " "+LineInfo.groupVector.size());
-			for(int m=0; m < LineInfo.groupVector.get(i).size(); m++)
-			{	
-				LineInfo startAtom = LineInfo.groupVector.get(i).get(m);
-				if(startAtom.getConnectedPoint()==1)
-				{
-					LineInfo currentAtom1=null;
-					LineInfo nextAtom1=null;
-					Vector<LineInfo> branchMembers=null;
-					boolean restartSameBranch =false;
-					int mNewBranch=0;
-					do
+//			LineInfo startAtom = LineInfo.cycloAt;
+//			LineInfo currentAtom1=null;
+//			LineInfo nextAtom1=null;
+//			Vector<LineInfo> branchMembers=null;
+//			do
+//			{
+//				
+//				
+//			}while(true);//** cyclo parser ************
+		}else
+		{
+			for(int i=0; i < LineInfo.groupVector.size(); i++)
+			{
+				//Log.v("groupVectorSizez", " "+LineInfo.groupVector.size());
+				for(int m=0; m < LineInfo.groupVector.get(i).size(); m++)
+				{	
+					LineInfo startAtom = LineInfo.groupVector.get(i).get(m);
+					if(startAtom.getConnectedPoint()==1)
 					{
-						if(branchMembers==null || mNewBranch == 1)
-							branchMembers= new Vector<LineInfo>();
-						
-						if(currentAtom1==null && nextAtom1==null)
+						LineInfo currentAtom1=null;
+						LineInfo nextAtom1=null;
+						Vector<LineInfo> branchMembers=null;
+						boolean restartSameBranch =false;
+						int mNewBranch=0;
+						do
 						{
-							startAtom.crawledSet(true);
-							branchMembers.add(startAtom);
-							LineInfo[] mAtoms= startAtom.getConnectedAtom();
-							currentAtom1= mAtoms[0];                                                                                                                                                                
-							mNewBranch=0;
-						}else
-						{
-							if(nextAtom1!=null)//set next Atom
-							{ 
-								currentAtom1 = nextAtom1;
-								if(restartSameBranch==true)
-								{
-									branchMembers.add(startAtom);
-									currentAtom1=startAtom.getConnectedAtom()[0];
-									restartSameBranch=false;
-								}
-							} 
-							LineInfo[] mAtoms = currentAtom1.getConnectedAtom();
+							if(branchMembers==null || mNewBranch == 1)
+								branchMembers= new Vector<LineInfo>();
 							
-							if(currentAtom1.getConnectedAtomSize()==2)
+							if(currentAtom1==null && nextAtom1==null)
 							{
-								branchMembers.add(currentAtom1);//**prevent error when parsing from other ends
-								if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
-								{
-									//nextAtom1.crawledStatusSet(nextAtom1.crawledStatusGet()+1);
-									currentAtom1.crawledSet(true);
-									nextAtom1= mAtoms[1];//prevent error when parsing from different ends**
-								}else
-								{
-									//nextAtom1.crawledStatusSet(nextAtom1.crawledStatusGet()+1);
-									currentAtom1.crawledSet(true);
-									nextAtom1= mAtoms[0];
-								}								
-								mNewBranch =0;
-							}		
-							
-							if(currentAtom1.getConnectedAtomSize()==3)
-							{
-								if(currentAtom1.crawlingStatusGet()==0)
-								{
-									branchMembers.add(currentAtom1);
-									if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[1];
-									}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[0];
-									}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[0];	
-									}
-									currentAtom1.crawledSet(true);
-									currentAtom1.crawlingStatusSet(currentAtom1.crawlingStatusGet()+1);
-									mNewBranch=0;
-								}
-								else if(currentAtom1.crawlingStatusGet()==1)
-								{
-									branchMembers.add(currentAtom1);
-									if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[2];
-									}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[2];
-									}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[1];	
-									}
-									currentAtom1.crawlingStatusSet(0);	
-									currentAtom1.crawledSet(true);
-								}
+								startAtom.crawledSet(true);
+								branchMembers.add(startAtom);
+								LineInfo[] mAtoms= startAtom.getConnectedAtom();
+								currentAtom1= mAtoms[0];                                                                                                                                                                
 								mNewBranch=0;
-							}
-							if(currentAtom1.getConnectedAtomSize()==4)
+							}else
 							{
-								if(currentAtom1.crawlingStatusGet()==0)
+								if(nextAtom1!=null)//set next Atom
+								{ 
+									currentAtom1 = nextAtom1;
+									if(restartSameBranch==true)
+									{
+										branchMembers.add(startAtom);
+										currentAtom1=startAtom.getConnectedAtom()[0];
+										restartSameBranch=false;
+									}
+								} 
+								LineInfo[] mAtoms = currentAtom1.getConnectedAtom();
+								
+								if(currentAtom1.getConnectedAtomSize()==2)
 								{
-									branchMembers.add(currentAtom1);
+									branchMembers.add(currentAtom1);//**prevent error when parsing from other ends
 									if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
 									{
-										nextAtom1= mAtoms[1];
-									}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										//nextAtom1.crawledStatusSet(nextAtom1.crawledStatusGet()+1);
+										currentAtom1.crawledSet(true);
+										nextAtom1= mAtoms[1];//prevent error when parsing from different ends**
+									}else
 									{
+										//nextAtom1.crawledStatusSet(nextAtom1.crawledStatusGet()+1);
+										currentAtom1.crawledSet(true);
 										nextAtom1= mAtoms[0];
-									}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
+									}								
+									mNewBranch =0;
+								}		
+								
+								if(currentAtom1.getConnectedAtomSize()==3)
+								{
+									if(currentAtom1.crawlingStatusGet()==0)
 									{
-										nextAtom1= mAtoms[0];	
+										branchMembers.add(currentAtom1);
+										if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[1];
+										}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[0];
+										}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[0];	
+										}
+										currentAtom1.crawledSet(true);
+										currentAtom1.crawlingStatusSet(currentAtom1.crawlingStatusGet()+1);
+										mNewBranch=0;
 									}
-									currentAtom1.crawlingStatusSet(currentAtom1.crawlingStatusGet()+1);
-									currentAtom1.crawledSet(true);
+									else if(currentAtom1.crawlingStatusGet()==1)
+									{
+										branchMembers.add(currentAtom1);
+										if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[2];
+										}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[2];
+										}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[1];	
+										}
+										currentAtom1.crawlingStatusSet(0);	
+										currentAtom1.crawledSet(true);
+									}
 									mNewBranch=0;
 								}
-								if(currentAtom1.crawlingStatusGet()==1)
+								if(currentAtom1.getConnectedAtomSize()==4)
 								{
-									branchMembers.add(currentAtom1);
-									if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
+									if(currentAtom1.crawlingStatusGet()==0)
 									{
-										nextAtom1= mAtoms[2];
-									}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[2];
-									}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[1];	
+										branchMembers.add(currentAtom1);
+										if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[1];
+										}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[0];
+										}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[0];	
+										}
+										currentAtom1.crawlingStatusSet(currentAtom1.crawlingStatusGet()+1);
+										currentAtom1.crawledSet(true);
+										mNewBranch=0;
 									}
-									currentAtom1.crawlingStatusSet(currentAtom1.crawlingStatusGet()+1);
-									currentAtom1.crawledSet(true);
-									mNewBranch=0;
-								}
-								if(currentAtom1.crawlingStatusGet()==2)
-								{
-									branchMembers.add(currentAtom1);
-									if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
+									if(currentAtom1.crawlingStatusGet()==1)
 									{
-										nextAtom1= mAtoms[3];
-									}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[3];
-									}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
-									{
-										nextAtom1= mAtoms[3];	
+										branchMembers.add(currentAtom1);
+										if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[2];
+										}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[2];
+										}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[1];	
+										}
+										currentAtom1.crawlingStatusSet(currentAtom1.crawlingStatusGet()+1);
+										currentAtom1.crawledSet(true);
+										mNewBranch=0;
 									}
-									currentAtom1.crawlingStatusSet(0);
-									currentAtom1.crawledSet(true);
-									mNewBranch=0;
+									if(currentAtom1.crawlingStatusGet()==2)
+									{
+										branchMembers.add(currentAtom1);
+										if(mAtoms[0].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[3];
+										}else if(mAtoms[1].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[3];
+										}else if(mAtoms[2].getID()==branchMembers.get(branchMembers.size()-2).getID())
+										{
+											nextAtom1= mAtoms[3];	
+										}
+										currentAtom1.crawlingStatusSet(0);
+										currentAtom1.crawledSet(true);
+										mNewBranch=0;
+									}
 								}
-							}
-							if(currentAtom1.getConnectedAtomSize()==1)
-							{
-								branchMembers.add(currentAtom1);
-								branches.add(branchCounter,branchMembers);
-								branchCounter++;
-								mNewBranch=1;
-								currentAtom1.crawledSet(true);
-								if(unCrawlAtoms().size()>=1)
+								if(currentAtom1.getConnectedAtomSize()==1)
 								{
-								restartSameBranch=true;
+									currentAtom1.crawledSet(true);
+									branchMembers.add(currentAtom1);					
+									if(branches.size()==0)
+									{
+										branches.add(branchMembers);
+										branchCounter++;
+										mNewBranch=1;
+									}else{
+										if(branchMembers.size()>branches.lastElement().size())
+										{
+											branches.remove(branches.size()-1);
+											branches.add(branchMembers);
+											branchCounter++;
+											mNewBranch=1;
+										}
+										if(branchMembers.size()==branches.lastElement().size())
+										{
+											branches.add(branchMembers);
+											branchCounter++;
+											mNewBranch=1;
+										}
+										if(branchMembers.size()<branches.lastElement().size())
+										{
+											branchMembers.clear();
+										}
+									}
+									
+									
+									if(unCrawlAtoms().size()>=1)
+									{
+									restartSameBranch=true;
+									}
+									
+									if(unCrawlAtoms().size()==0)
+									{
+										crawlReset();
+										restartSameBranch=false;
+										break;
+									}
 								}
 								
-								if(unCrawlAtoms().size()==0)
-								{
-									crawlReset();
-									restartSameBranch=false;
-									break;
-								}
+	//							if(currentAtom1.getConnectedAtomSize()==1 && unCrawlAtoms().size()==0)
+	//							{
+	//								crawlReset();
+	//								break;
+	//							}
 							}
-							
-//							if(currentAtom1.getConnectedAtomSize()==1 && unCrawlAtoms().size()==0)
-//							{
-//								crawlReset();
-//								break;
-//							}
-						}
-					}while(unCrawlAtoms().size()!=0);
-					
-		
+						}while(unCrawlAtoms().size()!=0);
+						
+			
+						
+					}
+	//					Log.v("LOGINFO", "connectedAtom:" +mLine.getConnectedAtomSize());
+				
+			
+	//				Log.v("lineVectorSizez", " "+LineInfo.groupVector.get(i).size());
+	//				LineInfo mLine = LineInfo.groupVector.get(i).get(m);
+	//				LineInfo[] atom = mLine.getConnectedAtom();
+	//				
+	//				int[] atomType = {-1,-1,-1,-1};
+	//				for (int z=0; z<atom.length; z++)
+	//				{
+	//					if(atom[z] !=null)
+	//					atomType[z]=atom[z].getAtomType();
+	//				}
+	//				Log.v("LOG_GetName", "groupSize:"+groupSize+
+	//									 " groupID:"+mLine.getGroupID()+ 
+	//									 " lineID:"+ mLine.getID()+
+	//									 " ConnectedPoints:"+ mLine.getConnectedPoint()+
+	//									 " connctedAtomType:"+atomType[0]+atomType[1]+atomType[2]+atomType[3]+
+	//									 " Bonds:"+mLine.getBond());
+				
 					
 				}
-//					Log.v("LOGINFO", "connectedAtom:" +mLine.getConnectedAtomSize());
-			
-		
-//				Log.v("lineVectorSizez", " "+LineInfo.groupVector.get(i).size());
-//				LineInfo mLine = LineInfo.groupVector.get(i).get(m);
-//				LineInfo[] atom = mLine.getConnectedAtom();
-//				
-//				int[] atomType = {-1,-1,-1,-1};
-//				for (int z=0; z<atom.length; z++)
-//				{
-//					if(atom[z] !=null)
-//					atomType[z]=atom[z].getAtomType();
-//				}
-//				Log.v("LOG_GetName", "groupSize:"+groupSize+
-//									 " groupID:"+mLine.getGroupID()+ 
-//									 " lineID:"+ mLine.getID()+
-//									 " ConnectedPoints:"+ mLine.getConnectedPoint()+
-//									 " connctedAtomType:"+atomType[0]+atomType[1]+atomType[2]+atomType[3]+
-//									 " Bonds:"+mLine.getBond());
-			
-				
+				Log.v("test", "test");
+				//branchesCleanup();
 			}
-			Log.v("test", "test");
 		}
 		//***********************************
 		
 		
+	}
+	
+	public void branchesCleanup()
+	{
+		//***get longest chain number....not in order******
+		//Vector<Vector<LineInfo>> tempVector = new Vector<Vector<LineInfo>>();
+		int branchesSize = branches.size()-1;
+		for(int i=0; i < branchesSize; i++)
+		{
+			Vector<LineInfo> currentGroup= branches.get(i);
+			int groupSize= currentGroup.size();
+			for (int i2=i+1; i2<branchesSize;i2++)
+			{
+				Vector<LineInfo> nextGroup= branches.get(i2);
+				for(int m=0; m<currentGroup.size(); m++)
+				{
+					if(currentGroup.get(m)==nextGroup.get(groupSize-(m-1)))
+					{
+//						matchCounter++;
+					}
+				}
+			}
+		}
+		//***get longest chain number....not in order******
+	}
+	
+	public Vector<LineInfo> subsParser( Vector<LineInfo> branch)
+	{
+		
+		return branch;
 	}
 	
 	public void setName(CharSequence mName)

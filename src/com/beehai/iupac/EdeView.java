@@ -211,21 +211,58 @@ public class EdeView extends View implements OnGestureListener{
 			{
 				for(int m=0;m < lineSize; m++)
 				{
+					LineInfo prevLine=null;//*** skip atom if same as prev***********************
+					if(m>=1)
+					{
+						prevLine= LineInfo.groupVector.get(i).get(m-1);
+					}//*** skip atom if same as prev***********************
 					LineInfo mLine = (LineInfo) LineInfo.groupVector.get(i).get(m);
 					LineInfo[] connectedAtoms = mLine.getConnectedAtom();
+					if(mLine.bondsWithCounter()>1 )//*** draw double-triple bonds ***********************
+					{
+						for(int p=0; p< mLine.bondsWithCounter()-1; p++)
+						{
+							LineInfo bondsWith = mLine.bondsWithGet(p);
+							int mRotation;
+							if(bondsWith!=null && bondsWith!=prevLine && bondsWith.getID()>mLine.getID())
+							{
+								if(mLine.getx0()>bondsWith.getx0()){
+									 mRotation= 0;
+								}else
+									 mRotation= 1;
+//								Log.v("double-Bond Draw", "mLine ID: "+ mLine.getID());
+//								Log.v("double-Bond Draw", "bondsWith ID: "+ bondsWith.getID());
+//								float mRatio = bondsWith.gety0()/mLine.gety0();
+//								Log.v("ratio", " "+mRatio);
+								float[] newCoords = calcParallel(mLine, bondsWith, mRotation);
+								cc.drawLine(newCoords[0], newCoords[1], newCoords[2], newCoords[3], paint);
+								
+							}
+						}
+					}//*** draw double-triple bonds ***********************
 					for(int n=0; n<connectedAtoms.length;n++)
 					{
-						if(connectedAtoms[n]!=null)
+						if(connectedAtoms[n]!=null )
 						{
 							cc.drawLine(mLine.getx0(), mLine.gety0(), connectedAtoms[n].getx0(),connectedAtoms[n].gety0(), paint);
 							if (mLine.getConnectedPoint()==1)
-									cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+							{
+								cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+								//cc.drawText(connectedAtoms[n].getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);	
+							}
 							if (mLine.getConnectedPoint()==2)
-								cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+							{	cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+								//cc.drawText(connectedAtoms[n].getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);
+							}
 							if (mLine.getConnectedPoint()==3)
-								cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+							{	cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+								//cc.drawText(connectedAtoms[n].getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);
+							}
 							if (mLine.getConnectedPoint()==4)
+							{
 								cc.drawText(mLine.getAtomTypeByLetter(), mLine.getx0(), mLine.gety0(), textPaint);
+								//cc.drawText(connectedAtoms[n].getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);
+							}
 //							if (connectedAtoms[n].getConnectedPoint()==1)
 //								cc.drawText(mLine.getAtomTypeByLetter(), connectedAtoms[n].getx0(), connectedAtoms[n].gety0(), textPaint);
 //							if (connectedAtoms[n].getConnectedPoint()==2)
@@ -281,23 +318,34 @@ public class EdeView extends View implements OnGestureListener{
 			//int arraySize = LineInfo.lineVector.size();
 			if(lineSize>1)
 			{
-				
 				LineInfo prevLine = LineInfo.groupVector.get(mGroupSize-1).get(lineSize-1);
 				LineInfo[] mConnectedAtom = prevLine.getConnectedAtom();
 				int mConnectedLength= mConnectedAtom.length;
 				for(int m=0; m < mConnectedLength; m++)
-				{
+				{	
 					if(mConnectedAtom[m]!=null)
 					{
 						mConnectedAtom[m].getID();
 						mConnectedAtom[m].removeConnectedAtom();
 						mConnectedAtom[m].removeConnectedPoint();
+						if(prevLine!=null)mConnectedAtom[m].bondsWithRemove(prevLine);
 						for(int n=0 ; n< mConnectedAtom[m].getCycloPoint().length;n++)
 						{
 							mConnectedAtom[m].getCycloPoint()[n]=0;
 						}
+						
 					}
 				}
+				//***remove cycloAt obj
+				if(prevLine.getCycloPoint()[0]>0 || prevLine.getCycloPoint()[1]>0)
+				LineInfo.cycloAt=null;
+				if(LineInfo.cycloAt!=null)
+				{
+					Log.v("testzzz", "x;" +LineInfo.cycloAt.getID());
+				}else{
+					Log.v("testzzz", "x;" +LineInfo.cycloAt);
+				}
+				//***remove cycloAt obj
 				LineInfo.groupVector.get(mGroupSize-1).remove(lineSize - 1);
 	//			LineInfo prevLine= LineInfo.groupVector.get(mGroupSize-1).get(lineSize-2);
 	//			prevLine.removeConnectedAtom();
@@ -309,6 +357,7 @@ public class EdeView extends View implements OnGestureListener{
 			}
 			else if(lineSize == 1)
 			{
+				
 				LineInfo.groupVector.get(mGroupSize-1).remove(0);
 	//			LineInfo prevLine= LineInfo.groupVector.get(groupSize).get(lineSize-2);
 	//			prevLine.removeConnectedAtom();
@@ -387,6 +436,96 @@ public class EdeView extends View implements OnGestureListener{
 	public boolean onSingleTapUp(MotionEvent e) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public float[] calcParallel(LineInfo obj0, LineInfo obj1, int rotation)
+	{
+		float[] parallelCoords= new float[4];
+		LineInfo mAtom0;
+		LineInfo mAtom1;
+//		if(obj0.getx0()>obj1.getx0())
+//		{
+//		 mAtom0 =obj1;
+//		 mAtom1 =obj0;
+//		}else{
+			 mAtom0 =obj0;
+			 mAtom1 =obj1;	
+//		}
+		Log.v("mAtom0", "ID"+mAtom0.getID());
+		Log.v("mAtom1", "ID"+mAtom1.getID());
+		float mAtom0_x= mAtom0.getx0();
+		float mAtom0_y= mAtom0.gety0();
+		float mAtom1_x= mAtom1.getx0();
+		float mAtom1_y= mAtom1.gety0();
+		if(LineInfo.cycloAt!=null)
+		{
+			if(mAtom0_y>mAtom1_y && mAtom0_x<mAtom1_x && rotation==1) //*** arrow up-->right
+			{
+				Log.v("calcParallel", "Arrow Up-->Right");
+				parallelCoords[0]= mAtom0_x+10;
+				parallelCoords[1]= mAtom0_y;
+				parallelCoords[2]= mAtom1_x;
+				parallelCoords[3]= mAtom1_y+10;
+			}
+			if(mAtom0_y>mAtom1_y && mAtom0_x>mAtom1_x)//*** arrow up--->left
+			{
+				Log.v("calcParallel", "Arrow Up-->Left");
+				parallelCoords[0]= mAtom0_x;
+				parallelCoords[1]= mAtom0_y	-10;
+				parallelCoords[2]= mAtom1_x+10;
+				parallelCoords[3]= mAtom1_y;
+			}
+			if(mAtom0_y<mAtom1_y && mAtom0_x<mAtom1_x)//**** arrow down-->right
+			{
+				Log.v("calcParallel", "Arrow Down-->Right");
+				parallelCoords[0]= mAtom0_x;
+				parallelCoords[1]= mAtom0_y+10;
+				parallelCoords[2]= mAtom1_x-10;
+				parallelCoords[3]= mAtom1_y;
+			}
+			if(mAtom0_y<mAtom1_y && mAtom0_x>mAtom1_x && rotation==0)//*** arrow down---Left
+			{
+				Log.v("calcParallel", "Arrow Down-->Left");
+				parallelCoords[0]= mAtom0_x-10;
+				parallelCoords[1]= mAtom0_y;
+				parallelCoords[2]= mAtom1_x;
+				parallelCoords[3]= mAtom1_y-10;
+			}
+		}else{
+		if(mAtom0_y>mAtom1_y && mAtom0_x<mAtom1_x) //*** arrow up-->right
+		{
+			Log.v("calcParallel", "Arrow Up-->Right");
+			parallelCoords[0]= mAtom0_x+10;
+			parallelCoords[1]= mAtom0_y;
+			parallelCoords[2]= mAtom1_x;
+			parallelCoords[3]= mAtom1_y+10;
+		}
+		if(mAtom0_y>mAtom1_y && mAtom0_x>mAtom1_x)//*** arrow up--->left
+		{
+			Log.v("calcParallel", "Arrow Up-->Left");
+			parallelCoords[0]= mAtom0_x-10;
+			parallelCoords[1]= mAtom0_y;
+			parallelCoords[2]= mAtom1_x;
+			parallelCoords[3]= mAtom1_y+10;
+		}
+		if(mAtom0_y<mAtom1_y && mAtom0_x<mAtom1_x)//**** arrow down-->right
+		{
+			Log.v("calcParallel", "Arrow Down-->Right");
+			parallelCoords[0]= mAtom0_x+10;
+			parallelCoords[1]= mAtom0_y;
+			parallelCoords[2]= mAtom1_x;
+			parallelCoords[3]= mAtom1_y-10;
+		}
+		if(mAtom0_y<mAtom1_y && mAtom0_x>mAtom1_x)//*** arrow down---Left
+		{
+			Log.v("calcParallel", "Arrow Down-->Left");
+			parallelCoords[0]= mAtom0_x-10;
+			parallelCoords[1]= mAtom0_y;
+			parallelCoords[2]= mAtom1_x;
+			parallelCoords[3]= mAtom1_y-10;
+		}
+		}
+		return parallelCoords;
 	}
 }
 
